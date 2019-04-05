@@ -12,14 +12,13 @@ data Expr
     = Symbol String
     | Number Double
     | Str String
-    | Call String [Expr]
+    | List [Expr]
 
 instance Show Expr where
     show (Symbol x) = x
     show (Number n) = show n
     show (Str s) = "\"" ++ s ++ "\""
-    show (Call name []) = "(" ++ name ++ ")"
-    show (Call name xs) = "(" ++ name ++ " " ++ intercalate " " (map show xs) ++ ")"
+    show (List xs) = "(" ++ intercalate " " (map show xs) ++ ")"
 
 space :: ReadP ()
 space = void $ many (satisfy isSpace)
@@ -58,12 +57,10 @@ sexpr :: ReadP Expr
 sexpr = do
     char '('
     space
-    name <- symbol
-    space1
-    args <- sepBy expr space1
+    xs <- sepBy expr space1
     space
     char ')'
-    return $ Call name args
+    return $ List xs
 
 expr :: ReadP Expr
 expr = (Symbol <$> symbol)
