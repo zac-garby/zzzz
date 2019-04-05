@@ -18,6 +18,8 @@ instance Show Expr where
     show (Symbol x) = x
     show (Number n) = show n
     show (Str s) = "\"" ++ s ++ "\""
+    show (List (Symbol "quote" : [xs@(List _)])) = "'" ++ show xs
+    show (List (Symbol "quote" : xs)) = "'(" ++ intercalate " " (map show xs) ++ ")"
     show (List xs) = "(" ++ intercalate " " (map show xs) ++ ")"
 
 space :: ReadP ()
