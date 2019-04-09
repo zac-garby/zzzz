@@ -14,7 +14,7 @@ data Expr
     | Number Double
     | Str String
     | List [Expr]
-    | Function [Expr] Expr
+    | Function [String] Expr
 
 instance Show Expr where
     show (Symbol x) = x
