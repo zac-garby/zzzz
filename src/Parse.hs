@@ -8,11 +8,13 @@ import Data.Char
 import Data.List
 import Control.Monad
 
+-- This is the same data-type which is used for both parse-results and actual evaluation.
 data Expr
     = Symbol String
     | Number Double
     | Str String
     | List [Expr]
+    | Function [Expr] Expr
 
 instance Show Expr where
     show (Symbol x) = x
