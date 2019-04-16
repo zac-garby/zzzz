@@ -1,11 +1,13 @@
 module Parse
     ( Expr (..)
     , parse
+    , parse'
     ) where
 
 import Text.ParserCombinators.ReadP
 import Data.Char
 import Data.List
+import Data.Maybe
 import Control.Monad
 
 -- This is the same data-type which is used for both parse-results and actual evaluation.
@@ -14,7 +16,7 @@ data Expr
     | Number Double
     | Str String
     | List [Expr]
-    | Function [String] Expr
+    deriving Eq
 
 instance Show Expr where
     show (Symbol x) = x
@@ -83,3 +85,6 @@ parse :: String -> Maybe Expr
 parse s = case readP_to_S expr s of
     [] -> Nothing
     xs -> (Just . fst . last) xs
+
+parse' :: String -> Expr
+parse' = fromJust . parse
