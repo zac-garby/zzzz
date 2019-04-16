@@ -11,6 +11,8 @@ _Doesn't work yet, in early development_
 
 ## Usage
 
+```bash
+cabal new-run
 ```
-cabal new-run # or cabal run, whatever you want. new-run doesn't give you warnings though so that's nice
-```
+
+ > You can use `cabal run` instead, but it will start screaming at you to get you to use `cabal new-run`.
