@@ -39,7 +39,7 @@ eval _ s@(Str _) = Right s
 eval _ q@(List (Symbol "quote" : _)) = Right q
 
 eval env (List (Symbol name : args))
-    = (get env name ||| "the function '" ++ name ++ "' is not defined") <&> List . (:args)
+    = (get env name ||| "the function '" ++ name ++ "' is not defined") <&> (\x -> List (x:args))
     
 eval env (List ((List [(Symbol "lambda"), (List params), body]) : args)) = do
     parameters <- sequence (map fromSymbol params) ||| "all parameters must be symbols"
