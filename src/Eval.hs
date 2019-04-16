@@ -47,7 +47,9 @@ eval env (List ((List [(Symbol "lambda"), (List params), body]) : args)) = do
         ok $ substitute (zip parameters args) body
     else
         err $ show (length params) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
-        
+
+eval env (List [x]) = ok x
+
 eval _ (List _) = err "a list must either be quoted or be in the form:\n\t(f a1 a2 ... an), f ∈ (lambda ..) | symbol "
 
 -- Fully evaluates a value
