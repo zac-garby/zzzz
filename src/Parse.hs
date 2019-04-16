@@ -16,7 +16,7 @@ data Expr
     | Number Double
     | Str String
     | List [Expr]
-    | Builtin ([Expr] -> Expr)
+    | Builtin (Env -> [Expr] -> Expr)
     deriving Eq
 
 instance Show Expr where
