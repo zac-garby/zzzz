@@ -39,7 +39,7 @@ eval env (List (Symbol name : args))
     = (get env name ||| "the function '" ++ name ++ "' is not defined") <&> (\x -> List (x:args))
     
 eval env (List ((List [(Symbol "lambda"), (List params), body]) : args)) = do
-    parameters <- sequence (map fromSymbol params) ||| "all parameters must be symbols"
+    parameters <- traverse fromSymbol params ||| "all parameters must be symbols"
     if length params == length args then
         ok $ substitute (zip parameters args) body
     else
