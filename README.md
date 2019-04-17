@@ -27,4 +27,7 @@ zzzz> (double 5)
 
 zzzz> (+ 1 2)
 3.0
+
+zzzz> ((lambda (a) (if a 'false 'true)) 'true)
+'false
 ```
