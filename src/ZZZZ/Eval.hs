@@ -75,10 +75,7 @@ canReduce :: Value -> Bool
 canReduce (Symbol _) = True
 canReduce (List (Symbol "quote" : _)) = False
 canReduce (List ((Symbol "lambda") : _)) = False
-canReduce (List (Symbol _ : _)) = True
-canReduce (List ((List [(Symbol "lambda"), (List _), _]) : _)) = True
-canReduce (List ((Builtin _ _) : _)) = True
-canReduce (List [_]) = True
+canReduce (List _) = True
 canReduce _ = False
 
 sub :: String -> Value -> Value -> Value
