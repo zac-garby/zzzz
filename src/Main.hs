@@ -1,8 +1,10 @@
 module Main where
 
-import Control.Monad
 import ZZZZ.Parse
 import ZZZZ.Eval
+import ZZZZ.Data
+
+import Control.Monad
 import System.IO
 import qualified Data.Map.Strict as M
 
