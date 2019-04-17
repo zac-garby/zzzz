@@ -61,15 +61,12 @@ eval _ (List _) = err "a list must either be quoted or be in the form:\n\t(f a1 
 
 -- Fully evaluates a value
 evaluate :: Env -> Value -> Result
-evaluate env val = do    
-    result <- eval env val
-    
-    -- traceM (show val ++ " -> " ++ show result) -- When uncommenting this, 'import Debug.Trace' in this file
-        
-    if canReduce result then
+evaluate env val = do
+    if canReduce val then do
+        result <- eval env val
         evaluate env result
     else
-        return result
+        return val
 
 canReduce :: Value -> Bool
 canReduce (Symbol _) = True
