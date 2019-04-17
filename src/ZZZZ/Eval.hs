@@ -28,9 +28,6 @@ infixr 0 |||
 Nothing ||| e = Left e
 Just val ||| _ = Right val
 
-err = Left
-ok = Right
-
 -- Performs one "layer" of evaluation
 eval :: Env -> Value -> Result
 eval env (Symbol name) = get env name ||| "the symbol '" ++ name ++ "' is not defined"
@@ -53,8 +50,7 @@ eval env (List ((Builtin strat b) : args)) =
         args' <- sequence $ zipWith (\s arg -> case s of
             Strict -> evaluate env arg
             Lazy -> return arg) strat args
-            
-        args' <- mapM (evaluate env) args
+        
         b args'
     else
         err $ show (length strat) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
