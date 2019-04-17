@@ -17,7 +17,7 @@ add _ = err "only numbers can be added using +"
 ifFn :: [Expr] -> Result
 ifFn [(List [(Symbol "quote"), Symbol "true"]), a, _] = ok a
 ifFn [(List [(Symbol "quote"), Symbol "false"]), _, b] = ok b
-ifFn _ = err "an if-expression should be in the form (if cond a b)"
+ifFn _ = err "an if-expression should be in the form:\n\t(if cond a b), cond ∈ ['true, 'false]"
 
 equal :: [Expr] -> Result
 equal [x, y] = ok $
