@@ -2,15 +2,13 @@ module Eval
     ( Env (..)
     , eval
     , evaluate
+    , ok
+    , err
     ) where
 
 import Parse
 import Data.Functor
 import qualified Data.Map.Strict as M
-
-type Value = Expr
-type Error = String
-type Result = Either Error Value
 
 data Env = Env (M.Map String Value)
 
@@ -48,6 +46,13 @@ eval env (List ((List [(Symbol "lambda"), (List params), body]) : args)) = do
     else
         err $ show (length params) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
 
+eval env (List ((Builtin n b) : args)) =
+    if length args == n then do
+        args' <- mapM (evaluate env) args
+        b args'
+    else
+        err $ show n ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
+
 eval env (List [x]) = ok x
 
 eval _ (List _) = err "a list must either be quoted or be in the form:\n\t(f a1 a2 ... an), f ∈ (lambda ..) | symbol "
@@ -69,6 +74,7 @@ canReduce (Symbol _) = True
 canReduce (List (Symbol "quote" : _)) = False
 canReduce (List (Symbol _ : _)) = True
 canReduce (List ((List [(Symbol "lambda"), (List _), _]) : _)) = True
+canReduce (List ((Builtin _ _) : _)) = True
 canReduce (List [_]) = True
 canReduce _ = False
 
