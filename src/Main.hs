@@ -9,7 +9,8 @@ import qualified Data.Map.Strict as M
 prelude :: Env
 prelude = Env $ M.fromList
     [ ("x",      parse' "5")
-    , ("double", parse' "(lambda (x) (+ x x))") ]
+    , ("double", parse' "(lambda (x) (+ x x))")
+    , ("pair", parse' "(lambda (x) '(x x))") ]
 
 main :: IO ()
 main = repl
