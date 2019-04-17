@@ -30,4 +30,7 @@ zzzz> (+ 1 2)
 
 zzzz> ((lambda (a) (if a 'false 'true)) 'true)
 'false
+
+zzzz> (= not (lambda (a) (if a 'false 'true)))
+'true
 ```
