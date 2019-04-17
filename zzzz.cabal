@@ -15,7 +15,7 @@ maintainer:          me@zacgarby.co.uk
 category:            Language
 
 library
-  exposed-modules:     Main, Eval, Parse
+  exposed-modules:     Main, ZZZZ.Eval, ZZZZ.Parse, ZZZZ.Data
   -- other-modules:
   -- other-extensions:
   build-depends:       base ^>=4.11.1.0, containers ^>=0.6.0.1
@@ -24,7 +24,7 @@ library
 
 executable zzzz
   main-is:             Main.hs
-  other-modules:       Eval, Parse
+  other-modules:       ZZZZ.Eval, ZZZZ.Parse, ZZZZ.Data
   -- other-extensions:
   build-depends:       base ^>=4.11.1.0, containers ^>=0.6.0.1
   hs-source-dirs:      src
