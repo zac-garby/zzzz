@@ -6,13 +6,21 @@ type Value = Expr
 type Error = String
 type Result = Either Error Value
 
+data Strat = Lazy | Strict
+    deriving (Eq, Ord, Show)
+
+-- This is required because different arguments in a builtin might require different
+-- evaluation strategies. For example, (if cond a b) will want cond to be evaluated
+-- strictly but a and b to remain unevaluated.
+type Strategy = [Strat]
+
 -- This is the same data-type which is used for both parse-results and actual evaluation.
 data Expr
     = Symbol String
     | Number Double
     | Str String
     | List [Expr]
-    | Builtin Int ([Expr] -> Result)
+    | Builtin Strategy ([Expr] -> Result)
 
 instance Show Expr where
     show (Symbol x) = x

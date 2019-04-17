@@ -48,12 +48,16 @@ eval env (List ((List [(Symbol "lambda"), (List params), body]) : args)) = do
     else
         err $ show (length params) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
 
-eval env (List ((Builtin n b) : args)) =
-    if length args == n then do
+eval env (List ((Builtin strat b) : args)) =
+    if length args == length strat then do
+        args' <- sequence $ zipWith (\s arg -> case s of
+            Strict -> evaluate env arg
+            Lazy -> return arg) strat args
+            
         args' <- mapM (evaluate env) args
         b args'
     else
-        err $ show n ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
+        err $ show (length strat) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
 
 eval env (List [x]) = ok x
 

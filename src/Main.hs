@@ -13,7 +13,7 @@ prelude = Env $ M.fromList
     [ ("x",      parse' "5")
     , ("double", parse' "(lambda (x) (+ x x))")
     , ("pair",   parse' "(lambda (x) '(x x))")
-    , ("+",      Builtin 2 add) ]
+    , ("+",      Builtin [Strict, Strict] add) ]
 
 add :: [Expr] -> Result
 add [Number x, Number y] = ok $ Number (x + y)
