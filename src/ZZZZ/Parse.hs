@@ -56,7 +56,7 @@ sexpr = do
 quoted :: ReadP Expr
 quoted = do
     char '\''
-    s <- sexpr
+    s <- expr
     return $ List [Symbol "quote", s]
 
 expr :: ReadP Expr
