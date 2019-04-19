@@ -1,10 +1,49 @@
 module ZZZZ.Data where
     
 import Data.List
+import Control.Monad
+import qualified Data.Map.Strict as M
 
 type Value = Expr
 type Error = String
-type Result = Either Error Value
+
+-- A Result contains either an OK value - in which case a value will be returned
+-- along with an environment update function - or an error value which will contain an
+-- error message.
+data Result a
+    = Err Error
+    | Ok a (Env -> Env)
+
+instance Monad Result where
+    return x = Ok x id
+    
+    Err msg >>= _ = Err msg
+    Ok x env >>= f = case f x of
+        Err msg -> Err msg
+        Ok y env' -> Ok y (env' . env)
+
+instance Applicative Result where
+    pure = return
+    (<*>) = ap
+
+instance Functor Result where
+    fmap = liftM
+
+infixr 0 |||
+(|||) :: Maybe a -> Error -> Result a
+Nothing ||| e = Err e
+Just val ||| _ = return val
+
+data Env = Env (M.Map String Value)
+
+instance Semigroup Env where
+    (Env a) <> (Env b) = Env (a <> b)
+
+instance Monoid Env where
+    mempty = Env mempty
+
+get :: Env -> String -> Maybe Value
+get (Env env) name = M.lookup name env
 
 data Strat = Lazy | Strict
     deriving (Eq, Ord, Show)
@@ -20,7 +59,7 @@ data Expr
     | Number Double
     | Str String
     | List [Expr]
-    | Builtin Strategy ([Expr] -> Result)
+    | Builtin Strategy ([Expr] -> Result Value)
 
 instance Show Expr where
     show (Symbol x) = x

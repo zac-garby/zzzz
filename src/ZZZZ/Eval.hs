@@ -1,6 +1,5 @@
 module ZZZZ.Eval
-    ( Env (..)
-    , eval
+    ( eval
     , evaluate
     , ok
     , err
@@ -12,33 +11,17 @@ import ZZZZ.Data
 import Data.Functor
 import qualified Data.Map.Strict as M
 
-data Env = Env (M.Map String Value)
-
-instance Semigroup Env where
-    (Env a) <> (Env b) = Env (a <> b)
-
-instance Monoid Env where
-    mempty = Env mempty
-
-get :: Env -> String -> Maybe Value
-get (Env env) name = M.lookup name env
-
-infixr 0 |||
-(|||) :: Maybe a -> b -> Either b a
-Nothing ||| e = Left e
-Just val ||| _ = Right val
-
 -- Performs one "layer" of evaluation
-eval :: Env -> Value -> Result
+eval :: Env -> Value -> Result Value
 eval env (Symbol name) = get env name ||| "the symbol '" ++ name ++ "' is not defined"
-eval _ n@(Number _) = ok n
-eval _ s@(Str _) = ok s
-eval _ q@(List (Symbol "quote" : _)) = ok q
+eval _ n@(Number _) = return n
+eval _ s@(Str _) = return s
+eval _ q@(List (Symbol "quote" : _)) = return q
 
 eval env (List [Symbol "let", List vars, body]) = case extract vars of
-    Nothing -> err "a 'let' construct should be in the form:\n\t(let (x1 v2 x2 v2 ... xn vn) body)"
+    Nothing -> Err "a 'let' construct should be in the form:\n\t(let (x1 v2 x2 v2 ... xn vn) body)"
     Just v -> let (params, args) = unzip v
-              in ok (List ((List [(Symbol "lambda"), (List (map Symbol params)), body]) : args))
+              in return (List ((List [(Symbol "lambda"), (List (map Symbol params)), body]) : args))
     where extract [] = Just []
           extract ((Symbol x):v:as) = (:) <$> Just (x, v) <*> extract as
           extract _ = Nothing
@@ -49,9 +32,9 @@ eval env (List (Symbol name : args))
 eval env (List ((List [(Symbol "lambda"), (List params), body]) : args)) = do
     parameters <- traverse fromSymbol params ||| "all parameters must be symbols"
     if length params == length args then
-        ok $ substitute (zip parameters args) body
+        return $ substitute (zip parameters args) body
     else
-        err $ show (length params) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
+        Err $ show (length params) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
 
 eval env (List ((Builtin strat b) : args)) =
     if length args == length strat then do
@@ -61,14 +44,14 @@ eval env (List ((Builtin strat b) : args)) =
         
         b args'
     else
-        err $ show (length strat) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
+        Err $ show (length strat) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
 
-eval env (List [x]) = ok x
+eval env (List [x]) = return x
 
-eval _ (List _) = err "a list must either be quoted or be in the form:\n\t(f a1 a2 ... an), f ∈ (lambda ..) | symbol "
+eval _ (List _) = Err "a list must either be quoted or be in the form:\n\t(f a1 a2 ... an), f ∈ (lambda ..) | symbol "
 
 -- Fully evaluates a value
-evaluate :: Env -> Value -> Result
+evaluate :: Env -> Value -> Result Value
 evaluate env val = do
     if canReduce val then do
         result <- eval env val

@@ -32,5 +32,5 @@ repl = forever $ do
 
 run :: Expr -> IO ()
 run p = case evaluate prelude p of
-    Left err -> putStrLn $ "error: " ++ err
-    Right v -> print v
+    Err err -> putStrLn $ "error: " ++ err
+    Ok v _ -> print v
