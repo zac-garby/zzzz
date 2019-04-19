@@ -73,4 +73,3 @@ zzzz> (fact 5)
 
  - Make sure not to substitute values into parameter lists in lambdas/lets/etc...
  - Trim function bodies in `Show` instance if they get too long.
- - Give an error if the entire input is not parsed in the REPL.
