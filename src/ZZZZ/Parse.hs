@@ -1,6 +1,5 @@
 module ZZZZ.Parse
-    ( Expr (..)
-    , parse
+    ( parse
     , parse'
     ) where
 
