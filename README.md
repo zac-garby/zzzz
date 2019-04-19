@@ -59,6 +59,18 @@ zzzz> (let (x 1 y 2) (+ x y))
 
  > Let constructs. This is actually just syntax sugar and will be internally transformed into `((lambda (x y) (+ x y)) 1 2)`.
 
+```
+zzzz> (def fact (lambda (n) (if (= n 0) 1 (* n (fact (- n 1))))))
+(lambda (n) (if (= n 0.0) 1.0 (* n (fact (- n 1.0)))))
+
+zzzz> (fact 5)
+120
+```
+
+ > This shows how a function can be defined. Variables can be defined the exact same way.
+
 ### TODO List
 
  - Make sure not to substitute values into parameter lists in lambdas/lets/etc...
+ - Trim function bodies in `Show` instance if they get too long.
+ - Give an error if the entire input is not parsed in the REPL.
