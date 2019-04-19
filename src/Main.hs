@@ -2,10 +2,11 @@ module Main where
 
 import ZZZZ.Parse
 import ZZZZ.Eval
-import ZZZZ.Data
+import ZZZZ.Data hiding (get)
 import ZZZZ.Builtin
 
 import Control.Monad
+import Control.Monad.State
 import System.IO
 import qualified Data.Map.Strict as M
 
@@ -19,18 +20,26 @@ prelude = Env $ M.fromList $
     ++ builtins
 
 main :: IO ()
-main = repl
+main = do
+    runStateT repl prelude
+    return ()
 
-repl :: IO ()
+repl :: StateT Env IO ()
 repl = forever $ do
-    putStr "zzzz> "
-    hFlush stdout
-    line <- getLine
+    line <- lift $ do
+        putStr "zzzz> "
+        hFlush stdout
+        getLine
+    
     case parse line of
-        Nothing -> putStrLn "no parse"
+        Nothing -> lift $ putStrLn "no parse"
         Just p -> run p
 
-run :: Expr -> IO ()
-run p = case evaluate prelude p of
-    Err err -> putStrLn $ "error: " ++ err
-    Ok v _ -> print v
+run :: Expr -> StateT Env IO ()
+run p = do
+    env <- get
+    case evaluate env p of
+        Err err -> lift $ putStrLn $ "error: " ++ err
+        Ok v t -> do
+            lift $ print v
+            modify t
