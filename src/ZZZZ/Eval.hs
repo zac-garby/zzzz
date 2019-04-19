@@ -35,6 +35,14 @@ eval _ n@(Number _) = ok n
 eval _ s@(Str _) = ok s
 eval _ q@(List (Symbol "quote" : _)) = ok q
 
+eval env (List [Symbol "let", List vars, body]) = case extract vars of
+    Nothing -> err "a 'let' construct should be in the form:\n\t(let (x1 v2 x2 v2 ... xn vn) body)"
+    Just v -> let (params, args) = unzip v
+              in ok (List ((List [(Symbol "lambda"), (List (map Symbol params)), body]) : args))
+    where extract [] = Just []
+          extract ((Symbol x):v:as) = (:) <$> Just (x, v) <*> extract as
+          extract _ = Nothing
+
 eval env (List (Symbol name : args))
     = (get env name ||| "the function '" ++ name ++ "' is not defined") <&> (\x -> List (x:args))
     
