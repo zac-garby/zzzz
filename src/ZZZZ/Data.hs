@@ -66,7 +66,8 @@ data Expr
 
 instance Show Expr where
     show (Symbol x) = x
-    show (Number n) = show n
+    show (Number n) = if integer n then show (round n) else show n
+        where integer n = n == fromInteger (round n)
     show (Str s) = "\"" ++ s ++ "\""
     show (List (Symbol "quote" : xs)) = "'" ++ intercalate " " (map show xs)
     show (List xs) = "(" ++ intercalate " " (map show xs) ++ ")"
