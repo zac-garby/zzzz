@@ -1,8 +1,6 @@
 module ZZZZ.Eval
     ( eval
     , evaluate
-    , ok
-    , err
     ) where
 
 import ZZZZ.Parse

@@ -78,6 +78,3 @@ instance Eq Expr where
     (Str x) == (Str y) = x == y
     (List x) == (List y) = x == y
     _ == _ = False
-
-err = Left
-ok = Right
