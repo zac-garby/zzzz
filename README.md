@@ -58,3 +58,7 @@ zzzz> (let (x 1 y 2) (+ x y))
 ```
 
  > Let constructs. This is actually just syntax sugar and will be internally transformed into `((lambda (x y) (+ x y)) 1 2)`.
+
+### TODO List
+
+ - Make sure not to substitute values into parameter lists in lambdas/lets/etc...
