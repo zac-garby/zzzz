@@ -45,6 +45,9 @@ instance Monoid Env where
 get :: Env -> String -> Maybe Value
 get (Env env) name = M.lookup name env
 
+set :: String -> Value -> Env -> Env
+set name val (Env env) = Env $ M.insert name val env
+
 data Strat = Lazy | Strict
     deriving (Eq, Ord, Show)
 
