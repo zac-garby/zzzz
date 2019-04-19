@@ -41,8 +41,18 @@ str = do
     char '"'
     return v
 
+integer :: ReadP Double
+integer = read <$> many1 digit
+
+decimal :: ReadP Double
+decimal = read <$> do
+    int <- many1 digit
+    char '.'
+    frac <- many1 digit
+    return $ int ++ "." ++ frac
+
 number :: ReadP Double
-number = read <$> many1 digit
+number = decimal <++ integer
 
 sexpr :: ReadP Expr
 sexpr = do
