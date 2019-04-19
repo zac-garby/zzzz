@@ -22,15 +22,32 @@ cabal new-run
 This will open up a repl, and you can enter things like this:
 
 ```
-zzzz> (double 5)
-10.0
-
 zzzz> (+ 1 2)
 3.0
 
+zzzz> (double 5)
+10.0
+```
+
+ > Some basic expressions
+
+```
 zzzz> ((lambda (a) (if a 'false 'true)) 'true)
 'false
+```
 
-zzzz> (= not (lambda (a) (if a 'false 'true)))
+ > This shows how a lambda function can be defined and applied to an argument. This particular lambda function is a simplified version of `not` from the standard library.
+
+```
+zzzz> (= not (lambda (a) (if (= a 'true) 'false (if (= a 'false) 'true a))))
 'true
 ```
+
+ > Functions are equal to each other if they consist of identical expressions. `not` is defined in the standard library.
+
+```
+zzzz> (if 'true 5 ⊥)
+5
+```
+
+ > Non-strict semantics.
