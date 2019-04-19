@@ -75,6 +75,8 @@ expr = (Symbol <$> symbol)
    +++ sexpr
    +++ quoted
 
+-- | Parses a string into an expression. If `Nothing` is returned, then the parse has failed,
+-- which means that either the syntax in the string was invalid or the EOF wasn't reached.
 parse :: String -> Maybe Expr
 parse s = case readP_to_S expr s of
     [] -> Nothing
@@ -82,5 +84,6 @@ parse s = case readP_to_S expr s of
         (expr, "") -> Just expr
         _ -> Nothing
 
+-- | Parses a string into an expression, but will raise an exception if the parse fails.
 parse' :: String -> Expr
 parse' = fromJust . parse

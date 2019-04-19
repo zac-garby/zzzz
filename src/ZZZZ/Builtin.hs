@@ -4,6 +4,8 @@ module ZZZZ.Builtin
 
 import ZZZZ.Data
 
+-- | Contains all of the builtin functions, i.e. functions which cannot be defined any other way than
+-- just by defining them in Haskell itself.
 builtins :: [(String, Value)]
 builtins = 
     [ ("+",  Builtin [Strict, Strict] (numOp "+" (+)))

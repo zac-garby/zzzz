@@ -4,10 +4,15 @@ import Data.List
 import Control.Monad
 import qualified Data.Map.Strict as M
 
+-- | Represents an expression which is used in evaluation, as opposed to one which is
+-- a result of a parse. In reality, though, expressions and values are the same type.
 type Value = Expr
+
+-- | Can be returned when evaluating a value. It will be used to indicate to the user
+-- which error happened.
 type Error = String
 
--- A Result contains either an OK value - in which case a value will be returned
+-- | A Result contains either an OK value - in which case a value will be returned
 -- along with an environment update function - or an error value which will contain an
 -- error message.
 data Result a
@@ -30,10 +35,14 @@ instance Functor Result where
     fmap = liftM
 
 infixr 0 |||
+
+-- | @x ||| err@ will return an error result with the given error message if @x@ is @Nothing@,
+-- and otherwise will return the value inside @x@, wrapped in @Ok@.
 (|||) :: Maybe a -> Error -> Result a
 Nothing ||| e = Err e
 Just val ||| _ = return val
 
+-- | Short for "environment", an @Env@ maps names to values to be retrieved when evaluating a symbol.
 data Env = Env (M.Map String Value)
 
 instance Semigroup Env where
@@ -42,21 +51,26 @@ instance Semigroup Env where
 instance Monoid Env where
     mempty = Env mempty
 
+-- | Returns the corresponding value to the given name inside an environment.
 get :: Env -> String -> Maybe Value
 get (Env env) name = M.lookup name env
 
+-- | Sets the value of the given name to some value, in an environment.
 set :: String -> Value -> Env -> Env
 set name val (Env env) = Env $ M.insert name val env
 
+-- | Specifies the evaluation strategy of a particular parameter of a builtin function.
 data Strat = Lazy | Strict
     deriving (Eq, Ord, Show)
 
+-- | Specifies the evaluation strategy of each of a builtin's parameters.
 -- This is required because different arguments in a builtin might require different
 -- evaluation strategies. For example, (if cond a b) will want cond to be evaluated
 -- strictly but a and b to remain unevaluated.
 type Strategy = [Strat]
 
--- This is the same data-type which is used for both parse-results and actual evaluation.
+-- | This is the same data-type which is used for both parse-results and actual evaluation.
+-- Generally, when it is referred to as @Expr@, it will be a parse result.
 data Expr
     = Symbol String
     | Number Double

@@ -9,7 +9,9 @@ import ZZZZ.Data
 import Data.Functor
 import qualified Data.Map.Strict as M
 
--- Performs one "layer" of evaluation
+-- | Performs one "layer" of evaluation, in the context of the given environment. The result which it returns
+-- may have an environment transformer attached inside an `Ok` value, in which case the environment should be
+-- updated accordingly.
 eval :: Env -> Value -> Result Value
 eval env (Symbol name) = get env name ||| "the symbol '" ++ name ++ "' is not defined"
 eval _ n@(Number _) = return n
@@ -50,7 +52,7 @@ eval env (List [x]) = return x
 
 eval _ (List _) = Err "a list must either be quoted or be in the form:\n\t(f a1 a2 ... an), f ∈ (lambda ..) | symbol "
 
--- Fully evaluates a value
+-- | Fully evaluates a value until it cannot be reduced any further, in the context of the given environment.
 evaluate :: Env -> Value -> Result Value
 evaluate env val = do
     if canReduce val then do
