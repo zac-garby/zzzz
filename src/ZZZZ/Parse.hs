@@ -23,7 +23,7 @@ digit :: ReadP Char
 digit = satisfy isDigit
 
 symbol :: ReadP String
-symbol = (:) <$> letter <*> many (letter +++ digit)
+symbol = many (letter +++ digit)
 
 escapeChar :: ReadP Char
 escapeChar = do
