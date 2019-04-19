@@ -6,13 +6,16 @@ import ZZZZ.Data
 
 builtins :: [(String, Value)]
 builtins = 
-    [ ("+",  Builtin [Strict, Strict] add)
+    [ ("+",  Builtin [Strict, Strict] (numOp "+" (+)))
+    , ("*",  Builtin [Strict, Strict] (numOp "*" (*)))
+    , ("-",  Builtin [Strict, Strict] (numOp "-" (-)))
+    , ("/",  Builtin [Strict, Strict] (numOp "/" (/)))
     , ("if", Builtin [Strict, Lazy, Lazy] ifFn)
     , ("=",  Builtin [Strict, Strict] equal) ]
 
-add :: [Expr] -> Result Value
-add [Number x, Number y] = return $ Number (x + y)
-add _ = Err "only numbers can be added using +"
+numOp :: String -> (Double -> Double -> Double) -> [Expr] -> Result Value
+numOp _ f [Number x, Number y] = return $ Number (f x y)
+numOp name _ _ = Err $ "only numbers supported for " ++ name
 
 ifFn :: [Expr] -> Result Value
 ifFn [(List [(Symbol "quote"), Symbol "true"]), a, _] = return a
