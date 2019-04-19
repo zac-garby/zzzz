@@ -13,7 +13,7 @@ prelude :: Env
 prelude = Env $ M.fromList $
     [ ("double", parse' "(lambda (x) (+ x x))")
     , ("pair",   parse' "(lambda (x) '(x x))")
-    , ("not",    parse' "(lambda (a) (if a 'false 'true))")
+    , ("not",    parse' "(lambda (a) (if (= a 'true) 'false (if (= a 'false) 'true a)))")
     , ("bottom", parse' "bottom")
     , ("⊥",      parse' "bottom") ]
     ++ builtins
