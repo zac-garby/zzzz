@@ -79,7 +79,9 @@ expr = (Symbol <$> symbol)
 parse :: String -> Maybe Expr
 parse s = case readP_to_S expr s of
     [] -> Nothing
-    xs -> (Just . fst . last) xs
+    xs -> case last xs of
+        (expr, "") -> Just expr
+        _ -> Nothing
 
 parse' :: String -> Expr
 parse' = fromJust . parse
