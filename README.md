@@ -47,7 +47,14 @@ zzzz> (= not (lambda (a) (if (= a 'true) 'false (if (= a 'false) 'true a))))
 
 ```
 zzzz> (if 'true 5 ⊥)
-5
+5.0
 ```
 
- > Non-strict semantics.
+ > Non-strict semantics. `⊥` refers to the "bottom" value, i.e. undefined. Despite an undefined value appearing, the program exits successfuly and returns the correct answer, and this is because of the non-strict nature of the language.
+ 
+```
+zzzz> (let (x 1 y 2) (+ x y))
+3.0
+```
+
+ > Let constructs. This is actually just syntax sugar and will be internally transformed into `((lambda (x y) (+ x y)) 1 2)`.
