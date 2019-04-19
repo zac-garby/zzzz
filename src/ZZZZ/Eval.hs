@@ -18,6 +18,8 @@ eval _ n@(Number _) = return n
 eval _ s@(Str _) = return s
 eval _ q@(List (Symbol "quote" : _)) = return q
 
+eval env (List [Symbol "def", Symbol name, value]) = Ok value (set name value)
+
 eval env (List [Symbol "let", List vars, body]) = case extract vars of
     Nothing -> Err "a 'let' construct should be in the form:\n\t(let (x1 v2 x2 v2 ... xn vn) body)"
     Just v -> let (params, args) = unzip v
