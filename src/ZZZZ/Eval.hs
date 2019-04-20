@@ -49,15 +49,14 @@ eval env (List ((Builtin strat b) : args)) =
     if length args == length strat then do
         args' <- sequence $ zipWith (\s arg -> case s of
             Strict -> evaluate env arg
-            Lazy -> return arg) strat args
+            Lazy -> return arg
+            WHNF -> eval env arg) strat args
         
         b args'
     else
         Err $ show (length strat) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
 
-eval env (List [x]) = return x
-
-eval _ (List _) = Err "a list must either be quoted or be in the form:\n\t(f a1 a2 ... an), f ∈ (lambda ..) | symbol "
+eval env (List xs) = List <$> (traverse (eval env) xs)
 
 -- | Fully evaluates a value until it cannot be reduced any further, in the context of the given environment.
 evaluate :: Env -> Value -> Result Value
@@ -70,9 +69,10 @@ evaluate env val = do
 
 canReduce :: Value -> Bool
 canReduce (Symbol _) = True
+canReduce (List ((Builtin _ _) : _)) = True
 canReduce (List (Symbol "quote" : _)) = False
 canReduce (List ((Symbol "lambda") : _)) = False
-canReduce (List _) = True
+canReduce (List xs) = any canReduce xs
 canReduce _ = False
 
 sub :: String -> Value -> Value -> Value

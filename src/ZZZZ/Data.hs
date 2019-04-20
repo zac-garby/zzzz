@@ -60,7 +60,7 @@ set :: String -> Value -> Env -> Env
 set name val (Env env) = Env $ M.insert name val env
 
 -- | Specifies the evaluation strategy of a particular parameter of a builtin function.
-data Strat = Lazy | Strict
+data Strat = Lazy | Strict | WHNF
     deriving (Eq, Ord, Show)
 
 -- | Specifies the evaluation strategy of each of a builtin's parameters.
