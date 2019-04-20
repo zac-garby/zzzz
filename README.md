@@ -68,7 +68,3 @@ zzzz> (fact 5)
 ```
 
  > This shows how a function can be defined. Variables can be defined the exact same way.
-
-### TODO List
-
- - Make sure not to substitute values into parameter lists in lambdas/lets/etc...
