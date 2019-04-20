@@ -28,15 +28,19 @@ eval env (List [Symbol "let", List vars, body]) = case extract vars of
           extract ((Symbol x):v:as) = (:) <$> Just (x, v) <*> extract as
           extract _ = Nothing
 
-eval env (List (Symbol name : args))
-    = (get env name ||| "the function '" ++ name ++ "' is not defined") <&> (\x -> List (x:args))
-    
 eval env (List ((List [(Symbol "lambda"), (List params), body]) : args)) = do
     parameters <- traverse fromSymbol params ||| "all parameters must be symbols"
     if length params == length args then
         return $ substitute (zip parameters args) body
     else
         Err $ show (length params) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
+
+eval env (List (Symbol "def" : _)) = Err "a 'def' construct should be in the form:\n\t(def name value)"
+eval env (List (Symbol "let" : _)) = Err "a 'let' construct should be in the form:\n\t(let (x1 v2 x2 v2 ... xn vn) body)"
+eval env (List ((List ((Symbol "lambda") : _) : _))) = Err "a 'lambda' expression should be in the form:\n\t(lambda (x1 x2 .. xn) body)"
+
+eval env (List (Symbol name : args))
+    = (get env name ||| "the function '" ++ name ++ "' is not defined") <&> (\x -> List (x:args))
 
 eval env (List ((Builtin strat b) : args)) =
     if length args == length strat then do
