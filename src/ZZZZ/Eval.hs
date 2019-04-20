@@ -70,7 +70,10 @@ canReduce _ = False
 
 sub :: String -> Value -> Value -> Value
 sub var val (Symbol sym) | sym == var = val
-sub var val (List (xs)) = (List (map (sub var val) xs))
+sub var val (List (Symbol "def" : name : xs)) = List $ (Symbol "def") : name : map (sub var val) xs
+sub var val (List (Symbol "let" : args : xs)) = List $ (Symbol "let") : args : map (sub var val) xs
+sub var val (List (Symbol "lambda" : args : xs)) = List $ (Symbol "lambda") : args : map (sub var val) xs
+sub var val (List xs) = List $ map (sub var val) xs
 sub _ _ o = o
 
 substitute :: [(String, Value)] -> Value -> Value
