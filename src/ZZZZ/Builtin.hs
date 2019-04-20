@@ -8,12 +8,13 @@ import ZZZZ.Data
 -- just by defining them in Haskell itself.
 builtins :: [(String, Value)]
 builtins = 
-    [ ("+",  Builtin [Strict, Strict] (numOp "+" (+)))
-    , ("*",  Builtin [Strict, Strict] (numOp "*" (*)))
-    , ("-",  Builtin [Strict, Strict] (numOp "-" (-)))
-    , ("/",  Builtin [Strict, Strict] (numOp "/" (/)))
-    , ("if", Builtin [Strict, Lazy, Lazy] ifFn)
-    , ("=",  Builtin [Strict, Strict] equal) ]
+    [ ("+",    Builtin [Strict, Strict] (numOp "+" (+)))
+    , ("*",    Builtin [Strict, Strict] (numOp "*" (*)))
+    , ("-",    Builtin [Strict, Strict] (numOp "-" (-)))
+    , ("/",    Builtin [Strict, Strict] (numOp "/" (/)))
+    , ("if",   Builtin [Strict, Lazy, Lazy] ifFn)
+    , ("=",    Builtin [Strict, Strict] equal)
+    , ("head", Builtin [Lazy] headFn) ]
 
 numOp :: String -> (Double -> Double -> Double) -> [Expr] -> Result Value
 numOp _ f [Number x, Number y] = return $ Number (f x y)
@@ -31,3 +32,8 @@ equal [x, y] = return $
     else
         List [(Symbol "quote"), Symbol "false"]
 equal _ = Err "this shouldn't be reached... report it as a bug"
+
+headFn :: [Expr] -> Result Value
+headFn [List [Symbol "quote", List (x:xs)]] = return x
+headFn [List [Symbol "quote", List []]] = Err "head cannot handle an empty list"
+headFn _ = Err "head expects a single quoted list as its argument"
