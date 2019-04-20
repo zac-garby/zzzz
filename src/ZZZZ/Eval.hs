@@ -19,6 +19,8 @@ eval _ s@(Str _) = return s
 eval _ q@(List (Symbol "quote" : _)) = return q
 
 eval env (List [Symbol "def", Symbol name, value]) = Ok value (set name value)
+eval env (List [Symbol "defun", name, params, body])
+    = return $ List [Symbol "def", name, (List [(Symbol "lambda"), params, body])]
 
 eval env (List [Symbol "let", List vars, body]) = case extract vars of
     Nothing -> Err "a 'let' construct should be in the form:\n\t(let (x1 v2 x2 v2 ... xn vn) body)"
@@ -36,6 +38,7 @@ eval env (List ((List [(Symbol "lambda"), (List params), body]) : args)) = do
         Err $ show (length params) ++ " parameters required, but " ++ show (length args) ++ " arguments supplied"
 
 eval env (List (Symbol "def" : _)) = Err "a 'def' construct should be in the form:\n\t(def name value)"
+eval env (List (Symbol "defun" : _)) = Err "a 'defun' construct should be in the form:\n\t(defun name (x1 x2 .. xn) body)"
 eval env (List (Symbol "let" : _)) = Err "a 'let' construct should be in the form:\n\t(let (x1 v2 x2 v2 ... xn vn) body)"
 eval env (List ((List ((Symbol "lambda") : _) : _))) = Err "a 'lambda' expression should be in the form:\n\t(lambda (x1 x2 .. xn) body)"
 
