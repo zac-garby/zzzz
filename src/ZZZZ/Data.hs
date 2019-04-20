@@ -83,6 +83,9 @@ instance Show Expr where
     show (Number n) = if integer n then show (round n) else show n
         where integer n = n == fromInteger (round n)
     show (Str s) = "\"" ++ s ++ "\""
+    show (List [Symbol "lambda", args, body]) = "(lambda " ++ show args ++ " " ++ trim (show body) ++ ")"
+        where trim xs | length xs > 32 = (take 27 xs) ++ " ... " ++ takeWhile (==')') (reverse xs)
+                      | otherwise = xs
     show (List (Symbol "quote" : xs)) = "'" ++ intercalate " " (map show xs)
     show (List xs) = "(" ++ intercalate " " (map show xs) ++ ")"
     show (Builtin n _) = "<builtin. " ++ show n ++ " args>"
