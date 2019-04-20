@@ -88,7 +88,7 @@ instance Show Expr where
                       | otherwise = xs
     show (List (Symbol "quote" : xs)) = "'" ++ intercalate " " (map show xs)
     show (List xs) = "(" ++ intercalate " " (map show xs) ++ ")"
-    show (Builtin n _) = "<builtin. " ++ show n ++ " args>"
+    show (Builtin n _) = "<builtin. " ++ show (length n) ++ " args>"
 
 instance Eq Expr where
     (Symbol x) == (Symbol y) = x == y
