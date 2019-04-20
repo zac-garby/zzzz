@@ -72,4 +72,3 @@ zzzz> (fact 5)
 ### TODO List
 
  - Make sure not to substitute values into parameter lists in lambdas/lets/etc...
- - Trim function bodies in `Show` instance if they get too long.
