@@ -14,7 +14,8 @@ builtins =
     , ("/",    Builtin [Strict, Strict] (numOp "/" (/)))
     , ("if",   Builtin [Strict, Lazy, Lazy] ifFn)
     , ("=",    Builtin [Strict, Strict] equal)
-    , ("head", Builtin [Lazy] headFn) ]
+    , ("head", Builtin [Lazy] headFn)
+    , ("cons", Builtin [Lazy, Lazy] consFn) ]
 
 numOp :: String -> (Double -> Double -> Double) -> [Expr] -> Result Value
 numOp _ f [Number x, Number y] = return $ Number (f x y)
@@ -37,3 +38,7 @@ headFn :: [Expr] -> Result Value
 headFn [List [Symbol "quote", List (x:xs)]] = return x
 headFn [List [Symbol "quote", List []]] = Err "head cannot handle an empty list"
 headFn _ = Err "head expects a single quoted list as its argument"
+
+consFn :: [Expr] -> Result Value
+consFn [x, List [Symbol "quote", List xs]] = return $ List [Symbol "quote", List (x:xs)]
+consFn _ = Err "cons expects two parameters: a value and a quoted list"
