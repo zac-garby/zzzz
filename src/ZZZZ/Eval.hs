@@ -70,6 +70,10 @@ evaluate env val = do
 canReduce :: Value -> Bool
 canReduce (Symbol _) = True
 canReduce (List ((Builtin _ _) : _)) = True
+canReduce (List (Symbol "def" : _)) = True
+canReduce (List (Symbol "defun" : _)) = True
+canReduce (List (Symbol "let" : _)) = True
+canReduce (List ((List ((Symbol "lambda") : _) : _))) = True
 canReduce (List (Symbol "quote" : _)) = False
 canReduce (List ((Symbol "lambda") : _)) = False
 canReduce (List xs) = any canReduce xs
