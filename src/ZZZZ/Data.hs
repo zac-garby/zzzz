@@ -76,6 +76,7 @@ data Expr
     | Number Double
     | Str String
     | List [Expr]
+    | Array [Expr]
     | Builtin Strategy ([Expr] -> Result Value)
 
 instance Show Expr where
@@ -88,6 +89,7 @@ instance Show Expr where
                       | otherwise = xs
     show (List (Symbol "quote" : xs)) = "'" ++ intercalate " " (map show xs)
     show (List xs) = "(" ++ intercalate " " (map show xs) ++ ")"
+    show (Array xs) = "[" ++ intercalate " " (map show xs) ++ "]"
     show (Builtin n _) = "<builtin. " ++ show (length n) ++ " args>"
 
 instance Eq Expr where
@@ -95,4 +97,5 @@ instance Eq Expr where
     (Number x) == (Number y) = x == y
     (Str x) == (Str y) = x == y
     (List x) == (List y) = x == y
+    (Array x) == (Array y) = x == y
     _ == _ = False
