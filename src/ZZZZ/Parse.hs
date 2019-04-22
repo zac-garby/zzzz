@@ -17,7 +17,7 @@ space1 :: ReadP ()
 space1 = void $ many1 (satisfy isSpace)
 
 letter :: ReadP Char
-letter = satisfy (\x -> not $ isSpace x || x `elem` "'\"()0123456789")
+letter = satisfy (\x -> not $ isSpace x || x `elem` "'\"()[]0123456789")
 
 digit :: ReadP Char
 digit = satisfy isDigit
@@ -62,6 +62,15 @@ sexpr = do
     char ')'
     return $ List xs
 
+array :: ReadP Expr
+array = do
+    char '['
+    space
+    xs <- sepBy expr space1
+    space
+    char ']'
+    return $ Array xs
+
 quoted :: ReadP Expr
 quoted = do
     char '\''
@@ -73,6 +82,7 @@ expr = (Symbol <$> symbol)
    +++ (Number <$> number)
    +++ (Str <$> str)
    +++ sexpr
+   +++ array
    +++ quoted
 
 -- | Parses a string into an expression. If `Nothing` is returned, then the parse has failed,
