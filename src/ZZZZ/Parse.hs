@@ -24,7 +24,7 @@ digit :: ReadP Char
 digit = satisfy isDigit
 
 symbol :: ReadP String
-symbol = (:) <$> letter <*> many digit
+symbol = (:) <$> letter <*> many (letter +++ digit)
 
 escapeChar :: ReadP Char
 escapeChar = do
@@ -39,6 +39,13 @@ str = do
     char '"'
     v <- many (escapeChar +++ satisfy (/= '"'))
     char '"'
+    return v
+
+character :: ReadP Char
+character = do
+    char '\''
+    v <- escapeChar <++ satisfy (/= '\'')
+    char '\''
     return v
 
 integer :: ReadP Double
@@ -80,11 +87,12 @@ quoted = do
 
 expr :: ReadP Expr
 expr = (ExSym <$> symbol)
-   +++ (ExNum <$> number)
-   +++ (ExStr <$> str)
-   +++ sexpr
-   +++ array
-   +++ quoted
+   <++ (ExNum <$> number)
+   <++ (ExStr <$> str)
+   <++ (ExChar <$> character)
+   <++ sexpr
+   <++ array
+   <++ quoted
 
 parseAll = readP_to_S (expr <* eof)
 

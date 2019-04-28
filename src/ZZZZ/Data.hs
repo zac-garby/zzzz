@@ -74,6 +74,7 @@ data Expr
     = ExSym String
     | ExNum Double
     | ExStr String
+    | ExChar Char
     | ExList [Expr]
     | ExArr [Expr]
 
@@ -82,6 +83,7 @@ instance Show Expr where
     show (ExNum n) = if integer n then show (round n) else show n
         where integer n = n == fromInteger (round n)
     show (ExStr s) = "\"" ++ s ++ "\""
+    show (ExChar c) = show c
     show (ExList [ExSym "lambda", args, body]) = "(lambda " ++ show args ++ " " ++ trim (show body) ++ ")"
         where trim xs | length xs > 32 = (take 27 xs) ++ " ... " ++ takeWhile (==')') (reverse xs)
                       | otherwise = xs
@@ -104,6 +106,6 @@ instance Eq Expr where
 data Term
     = Symbol String
     | Number Double
+    | Chararacter Char
     | Abstraction String Term
     | Application Term Term
-    
