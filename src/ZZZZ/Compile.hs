@@ -11,6 +11,14 @@ import ZZZZ.Data
 -- | a term for evaluation.
 compile :: Expr -> Either Error Term
 
+-- Special forms
+compile (ExList [ExSym "lambda", ExList [ExSym p], body]) = Abstraction p <$> compile body
+compile (ExList [ExSym "lambda", ExList ((ExSym p):ps), body])
+    = Abstraction p <$> (compile $ ExList [ExSym "lambda", ExList ps, body])
+compile (ExList [ExSym "lambda", ExList [], _]) = Left "a lambda abstraction must have at least one parameter"
+compile (ExList [ExSym "lambda", ExList _, _]) = Left "a lambda abstraction's parameter list must consist of only symbols"
+
+-- Regular forms
 compile (ExSym s) = Right $ Symbol s
 compile (ExNum n) = Right $ Number n
 compile (ExStr s) = Right $ mkList . map Character $ s
