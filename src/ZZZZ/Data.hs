@@ -95,6 +95,7 @@ instance Eq Expr where
     (ExSym x) == (ExSym y) = x == y
     (ExNum x) == (ExNum y) = x == y
     (ExStr x) == (ExStr y) = x == y
+    (ExChar x) == (ExChar y) = x == y
     (ExList x) == (ExList y) = x == y
     (ExArr x) == (ExArr y) = x == y
     _ == _ = False
