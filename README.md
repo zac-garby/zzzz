@@ -13,6 +13,8 @@ This isn't a _real_ programming language, in that it would be a terrible terribl
 
 ## Usage
 
+**N.B. I'm in the middle of a rewrite of the parser/compiler/evaluator (yeah, pretty much everything), so none of these examples will work right now!**
+
 ```bash
 cabal new-run
 ```
