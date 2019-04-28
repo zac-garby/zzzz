@@ -1,7 +1,6 @@
 module ZZZZ.Parse
     ( parse
     , parse'
-    , parseAll
     ) where
 
 import ZZZZ.Data
@@ -93,8 +92,6 @@ expr = (ExSym <$> symbol)
    <++ sexpr
    <++ array
    <++ quoted
-
-parseAll = readP_to_S (expr <* eof)
 
 -- | Parses a string into an expression. If `Nothing` is returned, then the parse has failed,
 -- which means that either the syntax in the string was invalid or the EOF wasn't reached.
