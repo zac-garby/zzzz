@@ -69,33 +69,41 @@ data Strat = Lazy | Strict | WHNF
 -- strictly but a and b to remain unevaluated.
 type Strategy = [Strat]
 
--- | This is the same data-type which is used for both parse-results and actual evaluation.
--- Generally, when it is referred to as @Expr@, it will be a parse result.
+-- | @Expr@ values are output from the parser and will be transformed into thunks for evaluation.
 data Expr
-    = Symbol String
-    | Number Double
-    | Str String
-    | List [Expr]
-    | Array [Expr]
-    | Builtin Strategy ([Expr] -> Result Value)
+    = ExSym String
+    | ExNum Double
+    | ExStr String
+    | ExList [Expr]
+    | ExArr [Expr]
 
 instance Show Expr where
-    show (Symbol x) = x
-    show (Number n) = if integer n then show (round n) else show n
+    show (ExSym x) = x
+    show (ExNum n) = if integer n then show (round n) else show n
         where integer n = n == fromInteger (round n)
-    show (Str s) = "\"" ++ s ++ "\""
-    show (List [Symbol "lambda", args, body]) = "(lambda " ++ show args ++ " " ++ trim (show body) ++ ")"
+    show (ExStr s) = "\"" ++ s ++ "\""
+    show (ExList [ExSym "lambda", args, body]) = "(lambda " ++ show args ++ " " ++ trim (show body) ++ ")"
         where trim xs | length xs > 32 = (take 27 xs) ++ " ... " ++ takeWhile (==')') (reverse xs)
                       | otherwise = xs
-    show (List (Symbol "quote" : xs)) = "'" ++ intercalate " " (map show xs)
-    show (List xs) = "(" ++ intercalate " " (map show xs) ++ ")"
-    show (Array xs) = "[" ++ intercalate " " (map show xs) ++ "]"
-    show (Builtin n _) = "<builtin. " ++ show (length n) ++ " args>"
+    show (ExList (ExSym "quote" : xs)) = "'" ++ intercalate " " (map show xs)
+    show (ExList xs) = "(" ++ intercalate " " (map show xs) ++ ")"
+    show (ExArr xs) = "[" ++ intercalate " " (map show xs) ++ "]"
 
 instance Eq Expr where
-    (Symbol x) == (Symbol y) = x == y
-    (Number x) == (Number y) = x == y
-    (Str x) == (Str y) = x == y
-    (List x) == (List y) = x == y
-    (Array x) == (Array y) = x == y
+    (ExSym x) == (ExSym y) = x == y
+    (ExNum x) == (ExNum y) = x == y
+    (ExStr x) == (ExStr y) = x == y
+    (ExList x) == (ExList y) = x == y
+    (ExArr x) == (ExArr y) = x == y
     _ == _ = False
+
+-- | @Term@s are the data type which is evaluated by the interpreter. They are more
+-- | akin to lambda calculus than lisp s-expressions in their structure. They may be
+-- | evaluated fully, e.g. a number or a string, or they may be unevaluated, like
+-- | a lambda application.
+data Term
+    = Symbol String
+    | Number Double
+    | Abstraction String Term
+    | Application Term Term
+    

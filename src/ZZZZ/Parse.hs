@@ -1,6 +1,7 @@
 module ZZZZ.Parse
     ( parse
     , parse'
+    , parseAll
     ) where
 
 import ZZZZ.Data
@@ -23,7 +24,7 @@ digit :: ReadP Char
 digit = satisfy isDigit
 
 symbol :: ReadP String
-symbol = many (letter +++ digit)
+symbol = (:) <$> letter <*> many digit
 
 escapeChar :: ReadP Char
 escapeChar = do
@@ -60,7 +61,7 @@ sexpr = do
     xs <- sepBy expr space1
     space
     char ')'
-    return $ List xs
+    return $ ExList xs
 
 array :: ReadP Expr
 array = do
@@ -69,30 +70,30 @@ array = do
     xs <- sepBy expr space1
     space
     char ']'
-    return $ Array xs
+    return $ ExArr xs
 
 quoted :: ReadP Expr
 quoted = do
     char '\''
     s <- expr
-    return $ List [Symbol "quote", s]
+    return $ ExList [ExSym "quote", s]
 
 expr :: ReadP Expr
-expr = (Symbol <$> symbol)
-   +++ (Number <$> number)
-   +++ (Str <$> str)
+expr = (ExSym <$> symbol)
+   +++ (ExNum <$> number)
+   +++ (ExStr <$> str)
    +++ sexpr
    +++ array
    +++ quoted
 
+parseAll = readP_to_S (expr <* eof)
+
 -- | Parses a string into an expression. If `Nothing` is returned, then the parse has failed,
 -- which means that either the syntax in the string was invalid or the EOF wasn't reached.
 parse :: String -> Maybe Expr
-parse s = case readP_to_S expr s of
-    [] -> Nothing
-    xs -> case last xs of
-        (expr, "") -> Just expr
-        _ -> Nothing
+parse s = case readP_to_S (expr <* eof) s of
+    [(expr, "")] -> Just expr
+    _ -> Nothing
 
 -- | Parses a string into an expression, but will raise an exception if the parse fails.
 parse' :: String -> Expr
