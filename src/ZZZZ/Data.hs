@@ -104,8 +104,20 @@ instance Eq Expr where
 -- | evaluated fully, e.g. a number or a string, or they may be unevaluated, like
 -- | a lambda application.
 data Term
-    = Symbol String
-    | Number Double
-    | Chararacter Char
-    | Abstraction String Term
-    | Application Term Term
+    = Symbol String -- ^ Usually a variable name when not quoted
+    | Number Double -- ^ Holds a floating-point number
+    | Character Char -- ^ A single character value
+    | Quoted Term -- ^ A quoted term, signifying that it shouldn't be evaluated
+    | Empty -- ^ An empty array for the end of cons-lists
+    | Abstraction String Term -- ^ A lambda abstraction, i.e. a function
+    | Application Term Term -- ^ A lambda application, i.e. a function call
+
+instance Show Term where
+    show (Symbol x) = x
+    show (Number n) = if integer n then show (round n) else show n
+        where integer n = n == fromInteger (round n)
+    show (Character c) = show c
+    show (Quoted t) = "'" ++ show t
+    show Empty = "[]"
+    show (Abstraction p b) = "λ" ++ p ++ "." ++ show b
+    show (Application f x) = "(" ++ show f ++ " " ++ show x ++ ")"
