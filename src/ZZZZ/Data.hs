@@ -120,5 +120,5 @@ instance Show Term where
     show (Character c) = show c
     show (Quoted t) = "'" ++ show t
     show Empty = "[]"
-    show (Abstraction p b) = "λ" ++ p ++ "." ++ show b
+    show (Abstraction p b) = "λ" ++ p ++ ".(" ++ show b ++ ")"
     show (Application f x) = "(" ++ show f ++ " " ++ show x ++ ")"
