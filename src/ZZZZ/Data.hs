@@ -1,5 +1,5 @@
 module ZZZZ.Data where
-    
+
 import Data.List
 import Control.Monad
 import qualified Data.Map.Strict as M
@@ -121,7 +121,9 @@ instance Show Term where
     show (Quoted t) = "'" ++ show t
     show Empty = "[]"
     show (Abstraction p b) = "λ" ++ p ++ ".(" ++ show b ++ ")"
-    show (Application f x) = "(" ++ show f ++ " " ++ show x ++ ")"
+    show a@(Application f x) = case unlist a of
+        Just xs -> show xs
+        Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
 
 unlist :: Term -> Maybe [Term]
 unlist (Application (Application (Symbol "cons") x) xs) = (x :) <$> unlist xs
