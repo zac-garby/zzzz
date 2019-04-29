@@ -122,3 +122,8 @@ instance Show Term where
     show Empty = "[]"
     show (Abstraction p b) = "λ" ++ p ++ ".(" ++ show b ++ ")"
     show (Application f x) = "(" ++ show f ++ " " ++ show x ++ ")"
+
+unlist :: Term -> Maybe [Term]
+unlist (Application (Application (Symbol "cons") x) xs) = (x :) <$> unlist xs
+unlist Empty = Just []
+unlist _ = Nothing
