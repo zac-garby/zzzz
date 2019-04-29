@@ -12,11 +12,10 @@ import ZZZZ.Data
 compile :: Expr -> Either Error Term
 
 -- Special forms
-compile (ExList [ExSym "lambda", ExList [ExSym p], body]) = Abstraction p <$> compile body
-compile (ExList [ExSym "lambda", ExList ((ExSym p):ps), body])
-    = Abstraction p <$> (compile $ ExList [ExSym "lambda", ExList ps, body])
-compile (ExList [ExSym "lambda", ExList [], _]) = Left "a lambda abstraction must have at least one parameter"
-compile (ExList [ExSym "lambda", ExList _, _]) = Left "a lambda abstraction's parameter list must consist of only symbols"
+compile (ExList [ExSym "lambda", ExList ps, body]) = foldr Abstraction <$> compile body <*> traverse toSym ps
+    where toSym (ExSym s) = Right s
+          toSym _ = Left "a lambda expression's parameter list must contain only symbols. pattern matching may be supported in the future"
+compile (ExList (ExSym "lambda" : _)) = Left "a lambda expression should be in the form:\n\t(lambda (x1 x2 .. xn) body)"
 
 -- Regular forms
 compile (ExSym s) = Right $ Symbol s
