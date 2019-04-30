@@ -1,11 +1,21 @@
 module ZZZZ.Compile
     ( compile
+    , preprocess
     , apply
     , mkList
     ) where
 
 import Data.Foldable (foldl')
 import ZZZZ.Data
+
+preprocess :: Expr -> Either Error Expr
+
+preprocess (ExList [ExSym "let", ExList xs, body]) = do
+    (vars, vals) <- letParams xs
+    return $ ExList (ExList [ExSym "lambda", ExList vars, body] : vals)
+preprocess (ExList (ExSym "let" : _)) = Left "a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
+
+preprocess x = Right x
 
 -- | Compiles an expression (which has probably just been parsed) into
 -- | a term for evaluation.
@@ -34,3 +44,8 @@ apply = foldl' Application
 mkList :: [Term] -> Term
 mkList [] = Empty
 mkList (x:xs) = apply (Symbol "cons") [x, mkList xs]
+
+letParams :: [Expr] -> Either Error ([Expr], [Expr])
+letParams [] = Right ([], [])
+letParams (ExSym n:v:xs) = (<>) <$> Right ([ExSym n], [v]) <*> letParams xs
+letParams _ = Left "a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
