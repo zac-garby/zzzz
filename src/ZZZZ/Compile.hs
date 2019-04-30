@@ -1,12 +1,22 @@
 module ZZZZ.Compile
-    ( compile
+    ( compileString
+    , compile
     , preprocess
     , apply
     , mkList
     ) where
 
 import Data.Foldable (foldl')
+
+import ZZZZ.Parse
 import ZZZZ.Data
+
+-- | Compiles a string into a term, for evaluating. It first parses it
+-- | then runs it through @preprocess@ and @compile@.
+compileString :: String -> Either Error Term
+compileString str = case parse str of
+    Nothing -> Left "invalid syntax, could not parse"
+    Just ex -> preprocess ex >>= compile
 
 preprocess :: Expr -> Either Error Expr
 
