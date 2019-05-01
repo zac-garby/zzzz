@@ -2,6 +2,7 @@ module ZZZZ.Data where
 
 import Data.List
 import Control.Monad
+import qualified Control.Monad.State as S
 import qualified Data.Map.Strict as M
 
 -- | Represents an expression which is used in evaluation, as opposed to one which is
@@ -130,3 +131,18 @@ sub sym to (Symbol s)
 sub sym to (Abstraction p b) = Abstraction p (sub sym to b)
 sub sym to (Application f x) = Application (sub sym to f) (sub sym to x)
 sub _ _ x = x
+
+-- | Reassigns all the symbol identifiers in abstractions to emulate lexical scoping
+-- | of internal applications.
+-- | TODO: This seems to work fine, but I should do some more extensive testing just
+-- | to make sure, because it would be a disaster if it didn't work in some case.
+renumber :: Term -> Term
+renumber t = S.evalState (renumber' t) 1
+    where
+        renumber' (Abstraction p b) = do
+            newP <- (\x -> "[" ++ x ++ "]") <$> show <$> S.get
+            S.modify (+1)
+            newB <- sub p (Symbol newP) <$> renumber' b
+            return $ Abstraction newP newB
+        renumber' (Application f x) = Application <$> renumber' f <*> renumber' x
+        renumber' x = return x
