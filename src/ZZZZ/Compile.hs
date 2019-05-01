@@ -13,12 +13,12 @@ import ZZZZ.Data
 
 -- | Compiles a string into a term, for evaluating. It first parses it
 -- | then runs it through @preprocess@ and @compile@.
-compileString :: String -> Either Error Term
-compileString str = case parse str of
-    Nothing -> Left "invalid syntax, could not parse"
-    Just ex -> preprocess ex >>= compile
+compileString :: String -> Result Term
+compileString str = do
+    ex <- parse str ||| "invalid syntax, could not parse"
+    preprocess ex >>= compile
 
-preprocess :: Expr -> Either Error Expr
+preprocess :: Expr -> Result Expr
 
 preprocess (ExList [ExSym "let", ExList xs, body]) = do
     (vars, vals) <- letParams xs
@@ -31,7 +31,7 @@ preprocess x = Right x
 
 -- | Compiles an expression (which has probably just been parsed) into
 -- | a term for evaluation.
-compile :: Expr -> Either Error Term
+compile :: Expr -> Result Term
 
 -- Special forms
 compile (ExList [ExSym "lambda", ExList ps, body]) = foldr Abstraction <$> compile body <*> traverse toSym ps
@@ -57,7 +57,7 @@ mkList :: [Term] -> Term
 mkList [] = Empty
 mkList (x:xs) = apply (Symbol "cons") [x, mkList xs]
 
-letParams :: [Expr] -> Either Error ([Expr], [Expr])
+letParams :: [Expr] -> Result ([Expr], [Expr])
 letParams [] = Right ([], [])
 letParams (ExSym n:v:xs) = (<>) <$> Right ([ExSym n], [v]) <*> letParams xs
 letParams _ = Left "a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
