@@ -12,34 +12,15 @@ type Value = Expr
 -- which error happened.
 type Error = String
 
--- | A Result contains either an OK value - in which case a value will be returned
--- along with an environment update function - or an error value which will contain an
--- error message.
-data Result a
-    = Err Error
-    | Ok a (Env -> Env)
-
-instance Monad Result where
-    return x = Ok x id
-    
-    Err msg >>= _ = Err msg
-    Ok x env >>= f = case f x of
-        Err msg -> Err msg
-        Ok y env' -> Ok y (env' . env)
-
-instance Applicative Result where
-    pure = return
-    (<*>) = ap
-
-instance Functor Result where
-    fmap = liftM
+-- | A Result contains either a success value or an error.
+type Result a = Either Error a
 
 infixr 0 |||
 
 -- | @x ||| err@ will return an error result with the given error message if @x@ is @Nothing@,
 -- and otherwise will return the value inside @x@, wrapped in @Ok@.
 (|||) :: Maybe a -> Error -> Result a
-Nothing ||| e = Err e
+Nothing ||| e = Left e
 Just val ||| _ = return val
 
 -- | Short for "environment", an @Env@ maps names to values to be retrieved when evaluating a symbol.
