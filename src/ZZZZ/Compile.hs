@@ -52,11 +52,6 @@ compile (ExArr xs) = mkList <$> traverse compile xs
 apply :: Term -> [Term] -> Term
 apply = foldl' Application
 
--- | Constructs a cons-list by repeatedly applying the cons function.
-mkList :: [Term] -> Term
-mkList [] = Empty
-mkList (x:xs) = apply (Symbol "cons") [x, mkList xs]
-
 letParams :: [Expr] -> Result ([Expr], [Expr])
 letParams [] = Right ([], [])
 letParams (ExSym n:v:xs) = (<>) <$> Right ([ExSym n], [v]) <*> letParams xs

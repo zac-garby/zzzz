@@ -106,6 +106,13 @@ instance Show Term where
         Just xs -> show xs
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
 
+-- | Constructs a cons-list by repeatedly applying the cons function.
+mkList :: [Term] -> Term
+mkList [] = Empty
+mkList (x:xs) = apply (Symbol "cons") [x, mkList xs]
+
+-- | Converts a cons-list into a list of terms. Will return Nothing if the
+-- | input isn't a cons-list.
 unlist :: Term -> Maybe [Term]
 unlist (Application (Application (Symbol "cons") x) xs) = (x :) <$> unlist xs
 unlist Empty = Just []
