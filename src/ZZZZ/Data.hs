@@ -106,6 +106,10 @@ instance Show Term where
         Just xs -> show xs
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
 
+-- | Utilises currying to apply a lambda abstraction to multiple arguments.
+apply :: Term -> [Term] -> Term
+apply = foldl' Application
+
 -- | Constructs a cons-list by repeatedly applying the cons function.
 mkList :: [Term] -> Term
 mkList [] = Empty

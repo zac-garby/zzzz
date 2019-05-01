@@ -48,10 +48,6 @@ compile (ExList []) = Left "an empty list isn't allowed"
 compile (ExList (x:xs)) = apply <$> compile x <*> traverse compile xs
 compile (ExArr xs) = mkList <$> traverse compile xs
 
--- | Utilises currying to apply a lambda abstraction to multiple arguments.
-apply :: Term -> [Term] -> Term
-apply = foldl' Application
-
 letParams :: [Expr] -> Result ([Expr], [Expr])
 letParams [] = Right ([], [])
 letParams (ExSym n:v:xs) = (<>) <$> Right ([ExSym n], [v]) <*> letParams xs
