@@ -121,3 +121,12 @@ unlist :: Term -> Maybe [Term]
 unlist (Application (Application (Symbol "cons") x) xs) = (x :) <$> unlist xs
 unlist Empty = Just []
 unlist _ = Nothing
+
+-- | Substitutes a value in place of a symbol inside a symbol.
+sub :: String -> Term -> Term -> Term
+sub sym to (Symbol s)
+    | s == sym = to
+    | otherwise = Symbol s
+sub sym to (Abstraction p b) = Abstraction p (sub sym to b)
+sub sym to (Application f x) = Application (sub sym to f) (sub sym to x)
+sub _ _ x = x
