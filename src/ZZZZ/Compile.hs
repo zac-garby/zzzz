@@ -16,7 +16,7 @@ import ZZZZ.Data
 compileString :: String -> Result Term
 compileString str = do
     ex <- parse str ||| "invalid syntax, could not parse"
-    preprocess ex >>= compile
+    renumber <$> (preprocess ex >>= compile)
 
 preprocess :: Expr -> Result Expr
 
