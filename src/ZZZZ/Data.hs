@@ -87,22 +87,22 @@ instance Eq Expr where
 -- | evaluated fully, e.g. a number or a string, or they may be unevaluated, like
 -- | a lambda application.
 data Term
-    = Symbol String -- ^ Usually a variable name when not quoted
+    = Symbol String Int -- ^ Usually a variable name when not quoted
     | Number Double -- ^ Holds a floating-point number
     | Character Char -- ^ A single character value
     | Quoted Term -- ^ A quoted term, signifying that it shouldn't be evaluated
     | Empty -- ^ An empty array for the end of cons-lists
-    | Abstraction String Term -- ^ A lambda abstraction, i.e. a function
+    | Abstraction Term Term -- ^ A lambda abstraction, i.e. a function
     | Application Term Term -- ^ A lambda application, i.e. a function call
 
 instance Show Term where
-    show (Symbol x) = x
+    show (Symbol x n) = x ++ "<" ++ show n ++ ">"
     show (Number n) = if integer n then show (round n) else show n
         where integer n = n == fromInteger (round n)
     show (Character c) = show c
     show (Quoted t) = "'" ++ show t
     show Empty = "[]"
-    show (Abstraction p b) = "λ" ++ p ++ ".(" ++ show b ++ ")"
+    show (Abstraction p b) = "λ" ++ show p ++ ".(" ++ show b ++ ")"
     show a@(Application f x) = case unlist a of
         Just xs -> show xs
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
@@ -114,35 +114,20 @@ apply = foldl' Application
 -- | Constructs a cons-list by repeatedly applying the cons function.
 mkList :: [Term] -> Term
 mkList [] = Empty
-mkList (x:xs) = apply (Symbol "cons") [x, mkList xs]
+mkList (x:xs) = apply (Symbol "cons" 0) [x, mkList xs]
 
 -- | Converts a cons-list into a list of terms. Will return Nothing if the
 -- | input isn't a cons-list.
 unlist :: Term -> Maybe [Term]
-unlist (Application (Application (Symbol "cons") x) xs) = (x :) <$> unlist xs
+unlist (Application (Application (Symbol "cons" 0) x) xs) = (x :) <$> unlist xs
 unlist Empty = Just []
 unlist _ = Nothing
 
 -- | Substitutes a value in place of a symbol inside a symbol.
-sub :: String -> Term -> Term -> Term
-sub sym to (Symbol s)
-    | s == sym = to
-    | otherwise = Symbol s
-sub sym to (Abstraction p b) = Abstraction p (sub sym to b)
-sub sym to (Application f x) = Application (sub sym to f) (sub sym to x)
-sub _ _ x = x
-
--- | Reassigns all the symbol identifiers in abstractions to emulate lexical scoping
--- | of internal applications.
--- | TODO: This seems to work fine, but I should do some more extensive testing just
--- | to make sure, because it would be a disaster if it didn't work in some case.
-renumber :: Term -> Term
-renumber t = S.evalState (renumber' t) 1
-    where
-        renumber' (Abstraction p b) = do
-            newP <- (\x -> "[" ++ x ++ "]") <$> show <$> S.get
-            S.modify (+1)
-            newB <- sub p (Symbol newP) <$> renumber' b
-            return $ Abstraction newP newB
-        renumber' (Application f x) = Application <$> renumber' f <*> renumber' x
-        renumber' x = return x
+sub :: String -> Int -> Term -> Term -> Term
+sub sym num to (Symbol s n)
+    | s == sym && n == num = to
+    | otherwise = Symbol s n
+sub sym num to (Abstraction p b) = Abstraction p (sub sym num to b)
+sub sym num to (Application f x) = Application (sub sym num to f) (sub sym num to x)
+sub _ _ _ x = x
