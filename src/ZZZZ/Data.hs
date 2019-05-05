@@ -114,12 +114,12 @@ apply = foldl' Application
 -- | Constructs a cons-list by repeatedly applying the cons function.
 mkList :: [Term] -> Term
 mkList [] = Empty
-mkList (x:xs) = apply (Symbol "cons" 0) [x, mkList xs]
+mkList (x:xs) = apply (Symbol "cons" _) [x, mkList xs]
 
 -- | Converts a cons-list into a list of terms. Will return Nothing if the
 -- | input isn't a cons-list.
 unlist :: Term -> Maybe [Term]
-unlist (Application (Application (Symbol "cons" 0) x) xs) = (x :) <$> unlist xs
+unlist (Application (Application (Symbol "cons" _) x) xs) = (x :) <$> unlist xs
 unlist Empty = Just []
 unlist _ = Nothing
 
