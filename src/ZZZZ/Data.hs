@@ -2,6 +2,7 @@ module ZZZZ.Data where
 
 import Data.List
 import Control.Monad
+import Control.Monad.State hiding (get)
 import qualified Control.Monad.State as S
 import qualified Data.Map.Strict as M
 
@@ -14,7 +15,7 @@ type Value = Expr
 type Error = String
 
 -- | A Result contains either a success value or an error.
-type Result a = Either Error a
+type Result = Either Error
 
 infixr 0 |||
 
@@ -131,3 +132,28 @@ sub sym num to (Symbol s n)
 sub sym num to (Abstraction p b) = Abstraction p (sub sym num to b)
 sub sym num to (Application f x) = Application (sub sym num to f) (sub sym num to x)
 sub _ _ _ x = x
+
+-- | Assigns indices to each symbol in a term, in order to evaluate it without
+-- | ambiguity. An error can arise if an abstraction's parameter isn't a symbol.
+renumber :: Term -> Term
+renumber t = evalState (renumber' t) 1
+    where renumber' :: Term -> State Int Term
+          renumber' (Abstraction (Symbol p n) b) = do
+              body <- renumber' b
+              newN <- increment
+              let body' = sub p n (Symbol p newN) body
+              return $ Abstraction (Symbol p newN) body'
+          
+          renumber' (Abstraction _ _) = error "pattern matching doesn't work yet"
+          
+          renumber' (Application f x) = do
+              f' <- renumber' f
+              x' <- renumber' x
+              return $ Application f' x'
+          
+          renumber' x = return x
+          
+          increment = do
+              n <- S.get
+              put (n + 1)
+              return n
