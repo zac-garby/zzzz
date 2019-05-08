@@ -6,10 +6,6 @@ import Control.Monad.State hiding (get)
 import qualified Control.Monad.State as S
 import qualified Data.Map.Strict as M
 
--- | Represents an expression which is used in evaluation, as opposed to one which is
--- a result of a parse. In reality, though, expressions and values are the same type.
-type Value = Expr
-
 -- | Can be returned when evaluating a value. It will be used to indicate to the user
 -- which error happened.
 type Error = String
@@ -26,7 +22,7 @@ Nothing ||| e = Left e
 Just val ||| _ = return val
 
 -- | Short for "environment", an @Env@ maps names to values to be retrieved when evaluating a symbol.
-data Env = Env (M.Map String Value)
+data Env = Env (M.Map String Term)
 
 instance Semigroup Env where
     (Env a) <> (Env b) = Env (a <> b)
@@ -35,11 +31,11 @@ instance Monoid Env where
     mempty = Env mempty
 
 -- | Returns the corresponding value to the given name inside an environment.
-get :: Env -> String -> Maybe Value
+get :: Env -> String -> Maybe Term
 get (Env env) name = M.lookup name env
 
 -- | Sets the value of the given name to some value, in an environment.
-set :: String -> Value -> Env -> Env
+set :: String -> Term -> Env -> Env
 set name val (Env env) = Env $ M.insert name val env
 
 -- | Specifies the evaluation strategy of a particular parameter of a builtin function.
@@ -97,6 +93,7 @@ data Term
     | Application Term Term -- ^ A lambda application, i.e. a function call
 
 instance Show Term where
+    show (Symbol x 0) = x
     show (Symbol x n) = x ++ "<" ++ show n ++ ">"
     show (Number n) = if integer n then show (round n) else show n
         where integer n = n == fromInteger (round n)
