@@ -40,6 +40,7 @@ compile (ExList [ExSym "lambda", ExList ps, body]) = foldr Abstraction <$> compi
 compile (ExList (ExSym "lambda" : _)) = Left "a lambda expression should be in the form:\n\t(lambda (x1 x2 .. xn) body)"
 
 -- Regular forms
+compile (ExSym "bottom") = Right $ Symbol "⊥" 0
 compile (ExSym s) = Right $ Symbol s 0
 compile (ExNum n) = Right $ Number n
 compile (ExStr s) = Right $ mkList . map Character $ s
