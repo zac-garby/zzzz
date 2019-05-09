@@ -100,7 +100,7 @@ instance Show Term where
     show (Character c) = show c
     show (Quoted t) = "'" ++ show t
     show Empty = "[]"
-    show (Abstraction p b) = "λ" ++ show p ++ ".(" ++ show b ++ ")"
+    show (Abstraction p b) = "λ" ++ show p ++ "." ++ show b
     show a@(Application f x) = case unlist a of
         Just xs -> show xs
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
