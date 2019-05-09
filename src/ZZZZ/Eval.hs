@@ -8,13 +8,6 @@ import ZZZZ.Data
 -- | Performs a β-reduction on a lambda term.
 reduce :: Term -> S.StateT Env Result Term
 
--- Literals
-reduce (Number n) = return $ Number n
-reduce (Character c) = return $ Character c
-reduce (Quoted q) = return $ Quoted q
-reduce Empty = return Empty
-reduce (Abstraction p b) = return $ Abstraction p b
-
 -- Things where stuff needs doing
 reduce (Symbol x n) = do
     env <- S.get
@@ -24,6 +17,9 @@ reduce (Symbol x n) = do
 
 reduce (Application (Abstraction (Symbol p n) b) x) = return $ sub p n x b
 reduce (Application f _) = S.lift . Left $ "invalid application. only functions can be applied, and the parameter must be a symbol. got function: " ++ show f
+
+-- Things already in normal form
+reduce x = return x
 
 -- TODO: It's pretty stupid to
 -- have abstraction parameters as generic 'Term's. There should be
