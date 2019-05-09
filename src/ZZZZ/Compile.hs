@@ -18,6 +18,7 @@ compileString str = do
     ex <- parse str ||| "invalid syntax, could not parse"
     renumber <$> (preprocess ex >>= compile)
 
+-- TODO: Preprocessing should be recursive, so sub-expressions are processed too.
 preprocess :: Expr -> Result Expr
 
 preprocess (ExList [ExSym "let", ExList xs, body]) = do
