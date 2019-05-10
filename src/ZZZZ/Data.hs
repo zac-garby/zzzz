@@ -13,6 +13,9 @@ type Error = String
 -- | A Result contains either a success value or an error.
 type Result = Either Error
 
+-- | A mapping from names to values, for use in an environment.
+type SymbolTable = M.Map String Term
+
 infixr 0 |||
 
 -- | @x ||| err@ will return an error result with the given error message if @x@ is @Nothing@,
@@ -22,7 +25,7 @@ Nothing ||| e = Left e
 Just val ||| _ = return val
 
 -- | Short for "environment", an @Env@ maps names to values to be retrieved when evaluating a symbol.
-data Env = Env (M.Map String Term)
+data Env = Env SymbolTable
 
 instance Semigroup Env where
     (Env a) <> (Env b) = Env (a <> b)
@@ -32,11 +35,11 @@ instance Monoid Env where
 
 -- | Returns the corresponding value to the given name inside an environment.
 get :: Env -> String -> Maybe Term
-get (Env env) name = M.lookup name env
+get (Env st) name = M.lookup name st
 
 -- | Sets the value of the given name to some value, in an environment.
 set :: String -> Term -> Env -> Env
-set name val (Env env) = Env $ M.insert name val env
+set name val (Env st) = Env $ M.insert name val st
 
 -- | Specifies the evaluation strategy of a particular parameter of a builtin function.
 data Strat = Lazy | Strict | WHNF
