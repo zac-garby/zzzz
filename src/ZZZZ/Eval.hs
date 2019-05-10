@@ -31,6 +31,7 @@ reduce x = return x
 -- | Checks whether or not a lambda term is in β normal form.
 isNormal :: Term -> Bool
 isNormal (Symbol _ _) = False
+isNormal (Application (Application (Symbol "cons" _) _) _) = True
 isNormal (Application _ _) = False
 isNormal _ = True
 
