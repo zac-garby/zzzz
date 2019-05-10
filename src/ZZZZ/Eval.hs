@@ -18,6 +18,13 @@ reduce (Symbol x n) = do
         Nothing -> S.lift . Left $ "undefined symbol: " ++ x
 
 reduce (Application (Abstraction (Symbol p n) b) x) = return $ sub p n x b
+reduce (Application (Application (Symbol "cons" n) a) b)
+    | isNormal a = do -- If a is in normal form, then b must not be
+        b' <- reduce b
+        return $ Application (Application (Symbol "cons" n) a) b'
+    | otherwise = do -- Otherwise, b is in normal form and a isn't.
+        a' <- reduce a
+        return $ Application (Application (Symbol "cons" n) a') b
 reduce (Application f x)
     | isNormal f = S.lift . Left $ "invalid application. only functions can be applied, and the parameter must be a symbol. got function: " ++ show f
     | otherwise = do
@@ -31,7 +38,7 @@ reduce x = return x
 -- | Checks whether or not a lambda term is in β normal form.
 isNormal :: Term -> Bool
 isNormal (Symbol _ _) = False
-isNormal (Application (Application (Symbol "cons" _) _) _) = True
+isNormal (Application (Application (Symbol "cons" _) a) b) = all isNormal [a, b]
 isNormal (Application _ _) = False
 isNormal _ = True
 
