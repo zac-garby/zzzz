@@ -102,7 +102,7 @@ instance Show Term where
     show Empty = "[]"
     show (Abstraction p b) = "λ" ++ show p ++ "." ++ show b
     show a@(Application f x) = case unlist a of
-        Just xs -> show xs
+        Just xs -> "[" ++ intercalate " " (map show xs) ++ "]"
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
 
 -- | Utilises currying to apply a lambda abstraction to multiple arguments.
