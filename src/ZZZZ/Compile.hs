@@ -24,7 +24,7 @@ compile :: Expr -> Result Term
 -- Special forms
 compile (ExList [ExSym "lambda", ExSym p, body]) = compile $ ExList [ExSym "lambda", ExList [ExSym p], body]
 compile (ExList [ExSym "lambda", ExList ps, body]) = foldr Abstraction <$> compile body <*> traverse toSym ps
-    where toSym (ExSym s) = Right (Symbol s 0)
+    where toSym (ExSym s) = Right (Symbol s 1)
           toSym _ = Left "a lambda expression's parameter list must contain only symbols. pattern matching may be supported in the future"
 compile (ExList (ExSym "lambda" : _)) = Left "a lambda expression should be in the form:\n\t(lambda (x1 x2 .. xn) body)"
 
@@ -34,8 +34,8 @@ compile (ExList [ExSym "let", ExList xs, body]) = do
 compile (ExList (ExSym "let" : _)) = Left "a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
 
 -- Regular forms
-compile (ExSym "bottom") = Right $ Symbol "⊥" 0
-compile (ExSym s) = Right $ Symbol s 0
+compile (ExSym "bottom") = Right $ Symbol "⊥" 1
+compile (ExSym s) = Right $ Symbol s 1
 compile (ExNum n) = Right $ Number n
 compile (ExStr s) = Right $ mkList . map Character $ s
 compile (ExChar c) = Right $ Character c
