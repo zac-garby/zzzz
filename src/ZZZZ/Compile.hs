@@ -1,7 +1,6 @@
 module ZZZZ.Compile
     ( compileString
     , compile
-    , preprocess
     , apply
     , mkList
     ) where
@@ -16,19 +15,7 @@ import ZZZZ.Data
 compileString :: String -> Result Term
 compileString str = do
     ex <- parse str ||| "invalid syntax, could not parse"
-    renumber <$> (preprocess ex >>= compile)
-
--- TODO: Preprocessing should be recursive, so sub-expressions are processed too.
-preprocess :: Expr -> Result Expr
-
-preprocess (ExList [ExSym "let", ExList xs, body]) = do
-    (vars, vals) <- letParams xs
-    return $ ExList (ExList [ExSym "lambda", ExList vars, body] : vals)
-preprocess (ExList (ExSym "let" : _)) = Left "a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
-
-preprocess (ExList (ExSym "λ" : xs)) = Right $ ExList (ExSym "lambda" : xs)
-
-preprocess x = Right x
+    renumber <$> compile ex
 
 -- | Compiles an expression (which has probably just been parsed) into
 -- | a term for evaluation.
@@ -39,6 +26,11 @@ compile (ExList [ExSym "lambda", ExList ps, body]) = foldr Abstraction <$> compi
     where toSym (ExSym s) = Right (Symbol s 0)
           toSym _ = Left "a lambda expression's parameter list must contain only symbols. pattern matching may be supported in the future"
 compile (ExList (ExSym "lambda" : _)) = Left "a lambda expression should be in the form:\n\t(lambda (x1 x2 .. xn) body)"
+
+compile (ExList [ExSym "let", ExList xs, body]) = do
+    (vars, vals) <- letParams xs
+    compile $ ExList (ExList [ExSym "lambda", ExList vars, body] : vals)
+compile (ExList (ExSym "let" : _)) = Left "a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
 
 -- Regular forms
 compile (ExSym "bottom") = Right $ Symbol "⊥" 0
@@ -53,4 +45,4 @@ compile (ExArr xs) = mkList <$> traverse compile xs
 letParams :: [Expr] -> Result ([Expr], [Expr])
 letParams [] = Right ([], [])
 letParams (ExSym n:v:xs) = (<>) <$> Right ([ExSym n], [v]) <*> letParams xs
-letParams _ = Left "a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
+letParams _ = Left "malformed parameter list. a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
