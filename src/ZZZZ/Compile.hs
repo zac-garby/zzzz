@@ -22,6 +22,7 @@ compileString str = do
 compile :: Expr -> Result Term
 
 -- Special forms
+compile (ExList [ExSym "lambda", ExSym p, body]) = compile $ ExList [ExSym "lambda", ExList [ExSym p], body]
 compile (ExList [ExSym "lambda", ExList ps, body]) = foldr Abstraction <$> compile body <*> traverse toSym ps
     where toSym (ExSym s) = Right (Symbol s 0)
           toSym _ = Left "a lambda expression's parameter list must contain only symbols. pattern matching may be supported in the future"

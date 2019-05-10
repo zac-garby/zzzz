@@ -93,7 +93,7 @@ data Term
     | Application Term Term -- ^ A lambda application, i.e. a function call
 
 instance Show Term where
-    show (Symbol x 0) = x
+    show (Symbol x 1) = x
     show (Symbol x n) = x ++ "<" ++ show n ++ ">"
     show (Number n) = if integer n then show (round n) else show n
         where integer n = n == fromInteger (round n)
