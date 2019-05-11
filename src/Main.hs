@@ -13,7 +13,7 @@ repl = forever rep
 
 rep :: IO ()
 rep = do
-    putStr "zzzz> "
+    putStr "λ> "
     hFlush stdout
     inp <- getLine
     case compileString inp >>= whnf mempty of
