@@ -94,6 +94,7 @@ data Term
     | Empty -- ^ An empty array for the end of cons-lists
     | Abstraction Term Term -- ^ A lambda abstraction, i.e. a function
     | Application Term Term -- ^ A lambda application, i.e. a function call
+    | Builtin Strategy ([Term] -> Result Term) -- ^ A builtin function implemented in Haskell
 
 instance Show Term where
     show (Symbol x 1) = x
@@ -107,6 +108,7 @@ instance Show Term where
     show a@(Application f x) = case unlist a of
         Just xs -> "[" ++ intercalate " " (map show xs) ++ "]"
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
+    show (Builtin s _) = "<builtin " ++ show (length s) ++ ">"
 
 -- | Utilises currying to apply a lambda abstraction to multiple arguments.
 apply :: Term -> [Term] -> Term
