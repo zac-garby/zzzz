@@ -43,7 +43,7 @@ isNormal (Application _ _) = False
 isNormal _ = True
 
 -- | Reduces a term to weak-head-normal-form by repeated β-reduction, with
--- | respect to the given environment.
+-- respect to the given environment.
 whnf :: Env -> Term -> Result Term
 whnf env t | isNormal t = return t
            | otherwise = S.evalStateT (reduce t) env >>= whnf env

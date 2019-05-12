@@ -11,14 +11,14 @@ import ZZZZ.Parse
 import ZZZZ.Data
 
 -- | Compiles a string into a term, for evaluating. It first parses it
--- | then runs it through @preprocess@ and @compile@.
+-- then runs it through @preprocess@ and @compile@.
 compileString :: String -> Result Term
 compileString str = do
     ex <- parse str ||| "invalid syntax, could not parse"
     renumber <$> compile ex
 
 -- | Compiles an expression (which has probably just been parsed) into
--- | a term for evaluation.
+-- a term for evaluation.
 compile :: Expr -> Result Term
 
 -- Special forms
