@@ -83,9 +83,9 @@ instance Eq Expr where
     _ == _ = False
 
 -- | @Term@s are the data type which is evaluated by the interpreter. They are more
--- | akin to lambda calculus than lisp s-expressions in their structure. They may be
--- | evaluated fully, e.g. a number or a string, or they may be unevaluated, like
--- | a lambda application.
+-- akin to lambda calculus than lisp s-expressions in their structure. They may be
+-- evaluated fully, e.g. a number or a string, or they may be unevaluated, like
+-- a lambda application.
 data Term
     = Symbol String Int -- ^ Usually a variable name when not quoted
     | Number Double -- ^ Holds a floating-point number
@@ -118,7 +118,7 @@ mkList [] = Empty
 mkList (x:xs) = apply (Symbol "cons" 1) [x, mkList xs]
 
 -- | Converts a cons-list into a list of terms. Will return Nothing if the
--- | input isn't a cons-list.
+-- input isn't a cons-list.
 unlist :: Term -> Maybe [Term]
 unlist (Application (Application (Symbol "cons" _) x) xs) = (x :) <$> unlist xs
 unlist Empty = Just []
@@ -134,7 +134,7 @@ sub sym num to (Application f x) = Application (sub sym num to f) (sub sym num t
 sub _ _ _ x = x
 
 -- | Assigns indices to each symbol in a term, in order to evaluate it without
--- | ambiguity. An error can arise if an abstraction's parameter isn't a symbol.
+-- ambiguity. An error can arise if an abstraction's parameter isn't a symbol.
 renumber :: Term -> Term
 renumber t = evalState (renumber' t) 1
     where renumber' :: Term -> State Int Term
