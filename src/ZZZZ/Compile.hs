@@ -1,8 +1,6 @@
 module ZZZZ.Compile
     ( compileString
     , compile
-    , apply
-    , mkList
     ) where
 
 import Data.Foldable (foldl')
