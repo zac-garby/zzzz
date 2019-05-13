@@ -11,6 +11,7 @@ import ZZZZ.Data
 reduce :: Term -> S.StateT Env Result Term
 
 -- Things where stuff needs doing
+reduce (Symbol "⊥" _) = S.lift . Left $ "bottom value evaluated"
 reduce (Symbol x n) = do
     env <- S.get
     case get env x of
