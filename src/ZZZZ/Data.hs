@@ -33,6 +33,10 @@ instance Semigroup Env where
 instance Monoid Env where
     mempty = Env mempty
 
+-- | Constructs a new environment from an associative list.
+listEnv :: [(String, Term)] -> Env
+listEnv = Env . M.fromList
+
 -- | Returns the corresponding value to the given name inside an environment.
 get :: Env -> String -> Maybe Term
 get (Env st) name = M.lookup name st
