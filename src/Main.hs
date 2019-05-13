@@ -6,9 +6,10 @@ import Control.Monad
 import ZZZZ.Compile
 import ZZZZ.Eval
 import ZZZZ.Data
+import ZZZZ.Builtin
 
 main :: IO ()
-main = void $ repl mempty
+main = void $ repl (listEnv builtins)
 
 -- | Repeats REPL iterations infinitely.
 repl :: Env -> IO Env
