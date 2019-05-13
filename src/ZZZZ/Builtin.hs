@@ -10,10 +10,10 @@ import ZZZZ.Data
 -- functions either.
 
 -- | A list containing all available builtin functions.
-builtins :: [(String, [Term] -> Result Term)]
+builtins :: [(String, Term)]
 builtins =
-    [ ("+", addB)
-    , ("-", subB) ]
+    [ ("+", Builtin [Strict, Strict] addB)
+    , ("-", Builtin [Strict, Strict] subB) ]
 
 addB :: [Term] -> Result Term
 addB [Number a, Number b] = return $ Number (a + b)
