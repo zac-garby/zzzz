@@ -80,6 +80,38 @@ instance Eq Expr where
     (ExArr x) == (ExArr y) = x == y
     _ == _ = False
 
+-- | Represents a type of a @Term@.
+data DataType
+    = TSymbol
+    | TNumber
+    | TCharacter
+    | TQuoted
+    | TEmpty
+    | TAbstraction
+    | TApplication
+    | TBuiltin
+    deriving Eq
+
+instance Show DataType where
+    show TSymbol = "symbol"
+    show TNumber = "number"
+    show TCharacter = "character"
+    show TQuoted = "quoted"
+    show TEmpty = "empty"
+    show TAbstraction = "abstraction"
+    show TApplication = "application"
+    show TBuiltin = "builtin"
+    
+typeOf :: Term -> DataType
+typeOf (Symbol _ _) = TSymbol
+typeOf (Number _) = TNumber
+typeOf (Character _) = TCharacter
+typeOf (Quoted _) = TQuoted
+typeOf (Empty) = TEmpty
+typeOf (Abstraction _ _) = TAbstraction
+typeOf (Application _ _) = TApplication
+typeOf (Builtin _ _) = TBuiltin
+
 -- | @Term@s are the data type which is evaluated by the interpreter. They are more
 -- akin to lambda calculus than lisp s-expressions in their structure. They may be
 -- evaluated fully, e.g. a number or a string, or they may be unevaluated, like
