@@ -33,7 +33,7 @@ reduce (Application (Application (Symbol "cons" n) a) b)
         a' <- reduce a
         return $ Application (Application (Symbol "cons" n) a') b
 reduce (Application f x)
-    | isNormal f = S.lift . Left $ "invalid application. only functions can be applied, and the parameter must be a symbol. got function: " ++ show f
+    | isNormal f = S.lift . Left $ "attempted to apply non-function: " ++ show f ++ ".\n\tmaybe you applied a function to too many arguments?"
     | otherwise = do
         env <- S.get
         reduced <- S.lift $ whnf env f
