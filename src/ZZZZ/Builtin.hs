@@ -12,13 +12,11 @@ import ZZZZ.Data
 -- | A list containing all available builtin functions.
 builtins :: [(String, Term)]
 builtins =
-    [ ("+", Builtin [Strict, Strict] addB)
-    , ("-", Builtin [Strict, Strict] subB) ]
+    [ ("+", addB) ]
 
-addB :: [Term] -> Result Term
-addB [Number a, Number b] = return $ Number (a + b)
-addB _ = Left "+ can only be applied to two numbers"
-
-subB :: [Term] -> Result Term
-subB [Number a, Number b] = return $ Number (a - b)
-subB _ = Left "- can only be applied to two numbers"
+addB :: Term
+addB = Builtin Strict $ \x -> case x of
+    Number a -> return $ Builtin Strict $ \y -> case y of
+        Number b -> return $ Number (a + b)
+        _ -> Left "+ can only accept number arguments"
+    _ -> Left "+ can only accept number arguments"
