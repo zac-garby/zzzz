@@ -19,6 +19,12 @@ reduce (Symbol x n) = do
         Nothing -> S.lift . Left $ "undefined symbol: " ++ x
 
 reduce (Application (Abstraction (Symbol p n) b) x) = return $ sub p n x b
+reduce (Application (Builtin s b) x) = case s of
+    Lazy -> S.lift $ b x
+    Strict -> do
+        env <- S.get
+        x' <- S.lift $ whnf env x
+        S.lift $ b x'
 reduce (Application (Application (Symbol "cons" n) a) b)
     | isNormal a = do -- If a is in normal form, then b must not be
         b' <- reduce b

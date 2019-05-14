@@ -46,14 +46,8 @@ set :: String -> Term -> Env -> Env
 set name val (Env st) = Env $ M.insert name val st
 
 -- | Specifies the evaluation strategy of a particular parameter of a builtin function.
-data Strat = Lazy | Strict | WHNF
+data Strat = Lazy | Strict
     deriving (Eq, Ord, Show)
-
--- | Specifies the evaluation strategy of each of a builtin's parameters.
--- This is required because different arguments in a builtin might require different
--- evaluation strategies. For example, (if cond a b) will want cond to be evaluated
--- strictly but a and b to remain unevaluated.
-type Strategy = [Strat]
 
 -- | @Expr@ values are output from the parser and will be transformed into thunks for evaluation.
 data Expr
