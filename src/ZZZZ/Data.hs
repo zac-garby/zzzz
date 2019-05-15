@@ -25,7 +25,7 @@ Nothing ||| e = Left e
 Just val ||| _ = return val
 
 -- | Short for "environment", an @Env@ maps names to values to be retrieved when evaluating a symbol.
-data Env = Env SymbolTable
+newtype Env = Env SymbolTable
 
 instance Semigroup Env where
     (Env a) <> (Env b) = Env (a <> b)
@@ -65,11 +65,11 @@ instance Show Expr where
     show (ExStr s) = "\"" ++ s ++ "\""
     show (ExChar c) = show c
     show (ExList [ExSym "lambda", args, body]) = "(lambda " ++ show args ++ " " ++ trim (show body) ++ ")"
-        where trim xs | length xs > 32 = (take 27 xs) ++ " ... " ++ takeWhile (==')') (reverse xs)
+        where trim xs | length xs > 32 = take 27 xs ++ " ... " ++ takeWhile (==')') (reverse xs)
                       | otherwise = xs
-    show (ExList (ExSym "quote" : xs)) = "'" ++ intercalate " " (map show xs)
-    show (ExList xs) = "(" ++ intercalate " " (map show xs) ++ ")"
-    show (ExArr xs) = "[" ++ intercalate " " (map show xs) ++ "]"
+    show (ExList (ExSym "quote" : xs)) = "'" ++ unwords (map show xs)
+    show (ExList xs) = "(" ++ unwords (map show xs) ++ ")"
+    show (ExArr xs) = "[" ++ unwords (map show xs) ++ "]"
 
 instance Eq Expr where
     (ExSym x) == (ExSym y) = x == y
@@ -107,7 +107,7 @@ typeOf (Symbol _ _) = TSymbol
 typeOf (Number _) = TNumber
 typeOf (Character _) = TCharacter
 typeOf (Quoted _) = TQuoted
-typeOf (Empty) = TEmpty
+typeOf Empty = TEmpty
 typeOf (Abstraction _ _) = TAbstraction
 typeOf (Application _ _) = TApplication
 typeOf (Builtin _ _) = TBuiltin
@@ -140,7 +140,7 @@ instance Show Term where
     show Empty = "[]"
     show (Abstraction p b) = "λ" ++ show p ++ "." ++ show b
     show a@(Application f x) = case unlist a of
-        Just xs -> "[" ++ intercalate " " (map show xs) ++ "]"
+        Just xs -> "[" ++ unwords (map show xs) ++ "]"
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
     show (Builtin s _) = "<builtin>"
 
