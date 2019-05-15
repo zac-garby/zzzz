@@ -129,8 +129,12 @@ data Term
 instance Show Term where
     show (Symbol x 1) = x
     show (Symbol x n) = x ++ "<" ++ show n ++ ">"
-    show (Number n) = if integer n then show (round n) else show n
-        where integer n = n == fromInteger (round n)
+    show (Number n)
+        | isInfinite n && n < 0 = "-Inf"
+        | isInfinite n && n > 0 = "Inf"
+        | isInteger n = show (round n)
+        | otherwise = show n
+        where isInteger n = n == fromInteger (round n)
     show (Character c) = show c
     show (Quoted t) = "'" ++ show t
     show Empty = "[]"
