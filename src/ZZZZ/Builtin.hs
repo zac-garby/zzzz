@@ -12,18 +12,15 @@ import ZZZZ.Data
 -- | A list containing all available builtin functions.
 builtins :: [(String, Term)]
 builtins =
-    [ ("+", addB)
-    , ("-", subB) ]
+    [ ("+", numOp (+))
+    , ("-", numOp (-))
+    , ("*", numOp (*))
+    , ("/", numOp (/)) ]
 
-addB :: Term
-addB = [TNumber] !=> \(Number a) ->
-       [TNumber] !=> \(Number b) ->
-       Number (a + b)
-
-subB :: Term
-subB = [TNumber] !=> \(Number a) ->
-       [TNumber] !=> \(Number b) ->
-       Number (a - b)
+numOp :: (Double -> Double -> Double) -> Term
+numOp f = [TNumber] !=> \(Number a) ->
+          [TNumber] !=> \(Number b) ->
+          Number (f a b)
 
 infixr 0 -->
 infixr 0 ==>
