@@ -31,6 +31,9 @@ compile (ExList [ExSym "let", ExList xs, body]) = do
     compile $ ExList (ExList [ExSym "lambda", ExList vars, body] : vals)
 compile (ExList (ExSym "let" : _)) = Left "a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
 
+compile (ExList [ExSym "quote", x]) = Quoted <$> compile x
+compile (ExList (ExSym "quote" : _)) = Left "quote can only take one argument"
+
 -- Regular forms
 compile (ExSym "bottom") = Right $ Symbol "⊥" 1
 compile (ExSym s) = Right $ Symbol s 1
