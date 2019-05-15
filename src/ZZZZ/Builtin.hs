@@ -12,11 +12,34 @@ import ZZZZ.Data
 -- | A list containing all available builtin functions.
 builtins :: [(String, Term)]
 builtins =
-    [ ("+", addB) ]
+    [ ("+", addB)
+    , ("-", subB) ]
 
 addB :: Term
-addB = Builtin Strict $ \x -> case x of
-    Number a -> return $ Builtin Strict $ \y -> case y of
-        Number b -> return $ Number (a + b)
-        _ -> Left "+ can only accept number arguments"
-    _ -> Left "+ can only accept number arguments"
+addB = [TNumber] !=> \(Number a) ->
+       [TNumber] !=> \(Number b) ->
+       Number (a + b)
+
+subB :: Term
+subB = [TNumber] !=> \(Number a) ->
+       [TNumber] !=> \(Number b) ->
+       Number (a - b)
+
+infixr 0 -->
+infixr 0 ==>
+infixr 0 !=>
+infixr 0 -=>
+
+(-->) :: (Strat, [DataType]) -> (Term -> Result Term) -> Term
+(s, ts) --> f = Builtin s $ \x -> if typeOf x `elem` ts
+    then f x
+    else Left $ "invalid argument of type: " ++ show (typeOf x) ++ "\n\texpected one of " ++ show ts
+
+(==>) :: (Strat, [DataType]) -> (Term -> Term) -> Term
+l ==> f = l --> (return . f)
+
+(!=>) :: [DataType] -> (Term -> Term) -> Term
+ts !=> f = (Strict, ts) ==> f
+
+(-=>) :: [DataType] -> (Term -> Term) -> Term
+ts -=> f = (Lazy, ts) ==> f
