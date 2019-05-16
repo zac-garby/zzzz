@@ -15,12 +15,19 @@ builtins =
     [ ("+", numOp (+))
     , ("-", numOp (-))
     , ("*", numOp (*))
-    , ("/", numOp (/)) ]
+    , ("/", numOp (/))
+    , ("head", headB) ]
 
 numOp :: (Double -> Double -> Double) -> Term
 numOp f = [TNumber] !=> \(Number a) ->
           [TNumber] !=> \(Number b) ->
           Number (f a b)
+
+headB :: Term
+headB = Builtin Lazy $ \f -> case f of
+    (Application (Application (Symbol "cons" _) h) _) -> return h
+    Empty -> Left "head doesn't work on empty lists"
+    _ -> Left "head only works on cons-lists"
 
 infixr 0 -->
 infixr 0 ==>
