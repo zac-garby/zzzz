@@ -20,7 +20,7 @@ repl env = do
 -- | A single REPL iteration. Takes an input, evaluates it, and prints out the result.
 rep :: Env -> IO Env
 rep env = do
-    putStr "λ> "
+    putStr "zzzz> "
     hFlush stdout
     inp <- getLine
     case compileString inp >>= whnf env of
