@@ -2,6 +2,7 @@ module Main where
 
 import System.IO
 import Control.Monad
+import Control.Monad.State (runStateT)
 
 import ZZZZ.Compile
 import ZZZZ.Eval
@@ -23,7 +24,11 @@ rep env = do
     putStr "\ESC[1mzzzz>\ESC[0m "
     hFlush stdout
     inp <- getLine
-    case compileString inp >>= whnf env of
-        Left err -> putStrLn $ "\ESC[1;31merror: " ++ err ++ "\ESC[0m"
-        Right term -> putStrLn $ "\ESC[1;32m" ++ show term ++ "\ESC[0m"
-    return env
+    
+    case compileString inp >>= \t -> runStateT (whnf t) env of
+        Left err -> do
+            putStrLn $ "\ESC[1;31merror: " ++ err ++ "\ESC[0m"
+            return env
+        Right (res, env') -> do
+            putStrLn $ "\ESC[1;32m" ++ show res ++ "\ESC[0m"
+            return env'

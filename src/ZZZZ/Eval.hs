@@ -19,11 +19,15 @@ reduce (Symbol x n) = do
         Nothing -> S.lift . Left $ "undefined symbol: " ++ x
 
 reduce (Application (Abstraction (Symbol p n) b) x) = return $ sub p n x b
+reduce (Application (Application (Symbol "def" _) (Symbol n _)) v) = do
+    S.modify (set n v)
+    return v
+reduce (Application (Application (Symbol "def" _) _) _) = do
+    S.lift . Left $ "malformed definition. a def expression should be in the form:\n\t(def name value)\n\twhere name is a symbol"
 reduce (Application (Builtin s b) x) = case s of
     Lazy -> S.lift $ b x
     Strict -> do
-        env <- S.get
-        x' <- S.lift $ whnf env x
+        x' <- whnf x
         S.lift $ b x'
 reduce (Application (Application (Symbol "cons" n) a) b)
     | isNormal a = do -- If a is in normal form, then b must not be
@@ -35,8 +39,7 @@ reduce (Application (Application (Symbol "cons" n) a) b)
 reduce (Application f x)
     | isNormal f = S.lift . Left $ "attempted to apply non-function: " ++ show f ++ ".\n\tmaybe you applied a function to too many arguments?"
     | otherwise = do
-        env <- S.get
-        reduced <- S.lift $ whnf env f
+        reduced <- whnf f
         return $ Application reduced x
 
 -- Things already in normal form
@@ -49,11 +52,18 @@ isNormal (Application (Application (Symbol "cons" _) a) b) = isNormal a && isNor
 isNormal (Application _ _) = False
 isNormal _ = True
 
+{-
 -- | Reduces a term to weak-head-normal-form by repeated β-reduction, with
--- respect to the given environment.
-whnf :: Env -> Term -> Result Term
-whnf env t | isNormal t = return t
-           | otherwise = S.evalStateT (reduce t) env >>= whnf env
+-- respect to the given environment. Also returns the environment, which will
+-- be modified if a def expression was evaluated.
+whnf :: Env -> Term -> Result (Env, Term)
+whnf env t | isNormal t = return (env, t)
+           | otherwise = S.runStateT (reduce t) env >>= uncurry (flip whnf)
+-}
+
+whnf :: Term -> S.StateT Env Result Term
+whnf t | isNormal t = return t
+       | otherwise = reduce t >>= whnf
 
 -- TODO: It's pretty stupid to
 -- have abstraction parameters as generic 'Term's. There should be
