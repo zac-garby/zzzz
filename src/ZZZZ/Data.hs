@@ -82,7 +82,8 @@ instance Eq Expr where
 
 -- | Represents a type of a @Term@.
 data DataType
-    = TSymbol
+    = TAny
+    | TSymbol
     | TNumber
     | TCharacter
     | TQuoted
@@ -111,6 +112,10 @@ typeOf Empty = TEmpty
 typeOf (Abstraction _ _) = TAbstraction
 typeOf (Application _ _) = TApplication
 typeOf (Builtin _ _) = TBuiltin
+
+is :: Term -> DataType -> Bool
+is t TAny = True
+is t dt = typeOf t == dt
 
 -- | @Term@s are the data type which is evaluated by the interpreter. They are more
 -- akin to lambda calculus than lisp s-expressions in their structure. They may be
@@ -143,6 +148,20 @@ instance Show Term where
         Just xs -> "[" ++ unwords (map show xs) ++ "]"
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
     show (Builtin s _) = "<builtin>"
+
+-- | The Eq instance for terms assumes that they are in weak-head-normal-form.
+-- In this way, two symbols will be equal if they have the same name, even though
+-- this would be unlikely to happen naturally. What I mean is that basically symbols
+-- and other terms won't be evaluated to check for equality.
+instance Eq Term where
+    Symbol x n == Symbol x' n' = x == x' && n == n'
+    Number a == Number b = a == b
+    Character a == Character b = a == b
+    Quoted a == Quoted b = a == b
+    Empty == Empty = True
+    Abstraction a b == Abstraction c d = a == c && b == d
+    Application a b == Application c d = a == c && b == d
+    _ == _ = False
 
 -- | Utilises currying to apply a lambda abstraction to multiple arguments.
 apply :: Term -> [Term] -> Term

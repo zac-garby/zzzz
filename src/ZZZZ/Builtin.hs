@@ -16,7 +16,8 @@ builtins =
     , ("-", numOp (-))
     , ("*", numOp (*))
     , ("/", numOp (/))
-    , ("head", headB) ]
+    , ("head", headB)
+    , ("eq", eqB) ]
 
 numOp :: (Double -> Double -> Double) -> Term
 numOp f = [TNumber] !=> \(Number a) ->
@@ -29,13 +30,19 @@ headB = Builtin Lazy $ \f -> case f of
     Empty -> Left "head doesn't work on empty lists"
     _ -> Left "head only works on cons-lists"
 
+eqB :: Term
+eqB = [TAny] !=> \a ->
+      [TAny] !=> \b ->
+      if a == b then Quoted $ Symbol "true" 1
+                else Quoted $ Symbol "false" 1
+
 infixr 0 -->
 infixr 0 ==>
 infixr 0 !=>
 infixr 0 -=>
 
 (-->) :: (Strat, [DataType]) -> (Term -> Result Term) -> Term
-(s, ts) --> f = Builtin s $ \x -> if typeOf x `elem` ts
+(s, ts) --> f = Builtin s $ \x -> if (x `is`) `any` ts
     then f x
     else Left $ "invalid argument of type: " ++ show (typeOf x) ++ "\n\texpected one of " ++ show ts
 
