@@ -17,6 +17,7 @@ builtins =
     , ("*", numOp (*))
     , ("/", numOp (/))
     , ("head", headB)
+    , ("tail", tailB)
     , ("eq", eqB)
     , ("if", ifB) ]
 
@@ -30,6 +31,14 @@ headB = Builtin strat $ \f -> case f of
     (Application (Application (Symbol "cons" _) h) _) -> return h
     Empty -> Left "head doesn't work on empty lists"
     _ -> Left "head only works on cons-lists"
+    where strat (Application (Application (Symbol "cons" _) _) _) = True
+          strat _ = False
+
+tailB :: Term
+tailB = Builtin strat $ \f -> case f of
+    (Application (Application (Symbol "cons" _) _) rest) -> return rest
+    Empty -> Left "tail doesn't work on empty lists"
+    _ -> Left "tail only works on cons-lists"
     where strat (Application (Application (Symbol "cons" _) _) _) = True
           strat _ = False
 
