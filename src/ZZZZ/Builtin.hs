@@ -17,7 +17,8 @@ builtins =
     , ("*", numOp (*))
     , ("/", numOp (/))
     , ("head", headB)
-    , ("eq", eqB) ]
+    , ("eq", eqB)
+    , ("if", ifB) ]
 
 numOp :: (Double -> Double -> Double) -> Term
 numOp f = [TNumber] !=> \(Number a) ->
@@ -37,6 +38,13 @@ eqB = [TAny] !=> \a ->
       [TAny] !=> \b ->
       if a == b then Quoted $ Symbol "true" 1
                 else Quoted $ Symbol "false" 1
+
+ifB :: Term
+ifB = [TAny] !=> \cond ->
+      [TAny] -=> \a ->
+      [TAny] -=> \b -> case cond of
+          Quoted (Symbol "true" _) -> a
+          _ -> b
 
 infixr 0 -->
 infixr 0 ==>
