@@ -145,8 +145,7 @@ data Term
     | Builtin Strategy (Term -> Result Term) -- ^ A builtin function implemented in Haskell
 
 instance Show Term where
-    show (Symbol x 1) = x
-    show (Symbol x n) = x ++ "<" ++ show n ++ ">"
+    show (Symbol x _) = x
     show (Number n)
         | isInfinite n && n < 0 = "-Inf"
         | isInfinite n && n > 0 = "Inf"
