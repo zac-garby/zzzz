@@ -52,15 +52,9 @@ isNormal (Application (Application (Symbol "cons" _) a) b) = isNormal a && isNor
 isNormal (Application _ _) = False
 isNormal _ = True
 
-{-
 -- | Reduces a term to weak-head-normal-form by repeated β-reduction, with
--- respect to the given environment. Also returns the environment, which will
--- be modified if a def expression was evaluated.
-whnf :: Env -> Term -> Result (Env, Term)
-whnf env t | isNormal t = return (env, t)
-           | otherwise = S.runStateT (reduce t) env >>= uncurry (flip whnf)
--}
-
+-- respect to the state's environment. The environment may be changed during
+-- evaluation.
 whnf :: Term -> S.StateT Env Result Term
 whnf t | isNormal t = return t
        | otherwise = reduce t >>= whnf
