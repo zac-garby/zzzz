@@ -2,6 +2,10 @@ module ZZZZ.Eval
     ( reduce
     , whnf
     , isNormal
+    , reduceWhile
+    , reduceUntil
+    , reduceWhile'
+    , reduceUntil'
     ) where
 
 import qualified Control.Monad.State as S
@@ -51,10 +55,25 @@ reduceWhile :: (Term -> Bool) -> Term -> S.StateT Env Result Term
 reduceWhile fn t | not (fn t) = return t
                  | otherwise = reduce t >>= reduceWhile fn
 
+-- | Reduces a term with respect to an environment while the predicate
+-- holds true. However, if a reduction is the same as a previous one
+-- (i.e. a loop has occurred)
+reduceWhile' :: (Term -> Bool) -> Term -> S.StateT Env Result Term
+reduceWhile' fn t | not (fn t) = return t
+                  | otherwise = reduce t >>= rf t fn
+                  where rf prev fn t | t == prev = return t
+                                     | otherwise = reduceWhile' fn t
+
 -- | Reduces a term with respect to an environment until the predicate
 -- evaluates to true on the reduced term.
 reduceUntil :: (Term -> Bool) -> Term -> S.StateT Env Result Term
 reduceUntil fn = reduceWhile (not . fn)
+
+-- | Reduces a term with respect to an environment until the predicate
+-- evaluates to true. However, if a reduction is the same as a previous one
+-- (i.e. a loop has occurred)
+reduceUntil' :: (Term -> Bool) -> Term -> S.StateT Env Result Term
+reduceUntil' fn = reduceWhile' (not . fn)
 
 -- | Reduces a term to weak-head-normal-form by repeated β-reduction, with
 -- respect to the state's environment. The environment may be changed during
