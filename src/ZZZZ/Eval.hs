@@ -52,12 +52,22 @@ isNormal (Application (Application (Symbol "cons" _) a) b) = isNormal a && isNor
 isNormal (Application _ _) = False
 isNormal _ = True
 
+-- | Reduces a term with respect to an environment while the predicate
+-- holds true on the reduced term.
+reduceWhile :: (Term -> Bool) -> Term -> S.StateT Env Result Term
+reduceWhile fn t | not (fn t) = return t
+                 | otherwise = reduce t >>= reduceWhile fn
+
+-- | Reduces a term with respect to an environment until the predicate
+-- evaluates to true on the reduced term.
+reduceUntil :: (Term -> Bool) -> Term -> S.StateT Env Result Term
+reduceUntil fn = reduceWhile (not . fn)
+
 -- | Reduces a term to weak-head-normal-form by repeated β-reduction, with
 -- respect to the state's environment. The environment may be changed during
 -- evaluation.
 whnf :: Term -> S.StateT Env Result Term
-whnf t | isNormal t = return t
-       | otherwise = reduce t >>= whnf
+whnf = reduceUntil isNormal
 
 -- TODO: It's pretty stupid to
 -- have abstraction parameters as generic 'Term's. There should be
