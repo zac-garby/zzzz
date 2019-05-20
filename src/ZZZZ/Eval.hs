@@ -45,13 +45,6 @@ reduce (Application f x)
 -- Things already in normal form
 reduce x = return x
 
--- | Checks whether or not a lambda term is in β normal form.
-isNormal :: Term -> Bool
-isNormal (Symbol _ _) = False
-isNormal (Application (Application (Symbol "cons" _) a) b) = isNormal a && isNormal b
-isNormal (Application _ _) = False
-isNormal _ = True
-
 -- | Reduces a term with respect to an environment while the predicate
 -- holds true on the reduced term.
 reduceWhile :: (Term -> Bool) -> Term -> S.StateT Env Result Term

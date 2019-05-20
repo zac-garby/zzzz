@@ -188,6 +188,13 @@ sub sym num to (Abstraction p b) = Abstraction p (sub sym num to b)
 sub sym num to (Application f x) = Application (sub sym num to f) (sub sym num to x)
 sub _ _ _ x = x
 
+-- | Checks whether or not a lambda term is in β normal form.
+isNormal :: Term -> Bool
+isNormal (Symbol _ _) = False
+isNormal (Application (Application (Symbol "cons" _) a) b) = isNormal a && isNormal b
+isNormal (Application _ _) = False
+isNormal _ = True
+
 -- | Assigns indices to each symbol in a term, in order to evaluate it without
 -- ambiguity. An error can arise if an abstraction's parameter isn't a symbol.
 renumber :: Term -> Term
