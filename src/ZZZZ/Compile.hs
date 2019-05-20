@@ -31,6 +31,10 @@ compile (ExList [ExSym "let", ExList xs, body]) = do
     compile $ ExList (ExList [ExSym "lambda", ExList vars, body] : vals)
 compile (ExList (ExSym "let" : _)) = Left "a let expression should be in the form:\n\t(let (x1 v1 x2 v2 .. xn vn) body)"
 
+compile (ExList [ExSym "defun", name, params, body]) =
+    compile $ ExList [ExSym "def", name, ExList [ExSym "lambda", params, body]]
+compile (ExList (ExSym "defun" : _)) = Left "malformed definition. a defun expression should be in the form:\n\t(defun name (x1 x2 .. xn) body)\n\twhere name, x1, x2, ..., xn are symbols"
+
 compile (ExList [ExSym "quote", x]) = Quoted <$> compile x
 compile (ExList (ExSym "quote" : _)) = Left "quote can only take one argument"
 
