@@ -46,8 +46,21 @@ set :: String -> Term -> Env -> Env
 set name val (Env st) = Env $ M.insert name val st
 
 -- | Specifies the evaluation strategy of a particular parameter of a builtin function.
-data Strat = Lazy | Strict
-    deriving (Eq, Ord, Show)
+-- A strategy is used when an argument to a builtin is evaluated -- the argument will
+-- be reduced until the strategy predicate evaluates to true. In this sense, the strategy
+-- specifies some criteria which an argument must meet before being passed to it.
+type Strategy = Term -> Bool
+
+-- | The lazy strategy always returns True, reflecting the fact that no reductions
+-- should be made for a lazy argument.
+lazy :: Strategy
+lazy = const True
+
+-- | The strict strategy always returns False, reflecting the fact that reductions should
+-- be made up to the point where they can't be any more (recall that reduceUntil' will not
+-- reduce any further once a stationary point has been reached.)
+strict :: Strategy
+strict = const False
 
 -- | @Expr@ values are output from the parser and will be transformed into thunks for evaluation.
 data Expr
@@ -129,7 +142,7 @@ data Term
     | Empty -- ^ An empty array for the end of cons-lists
     | Abstraction Term Term -- ^ A lambda abstraction, i.e. a function
     | Application Term Term -- ^ A lambda application, i.e. a function call
-    | Builtin Strat (Term -> Result Term) -- ^ A builtin function implemented in Haskell
+    | Builtin Strategy (Term -> Result Term) -- ^ A builtin function implemented in Haskell
 
 instance Show Term where
     show (Symbol x 1) = x
@@ -147,7 +160,7 @@ instance Show Term where
     show a@(Application f x) = case unlist a of
         Just xs -> "[" ++ unwords (map show xs) ++ "]"
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
-    show (Builtin s _) = "<builtin>"
+    show (Builtin _ _) = "<builtin>"
 
 -- | The Eq instance for terms assumes that they are in weak-head-normal-form.
 -- In this way, two symbols will be equal if they have the same name, even though

@@ -9,6 +9,7 @@ module ZZZZ.Eval
     ) where
 
 import qualified Control.Monad.State as S
+import Debug.Trace
 import ZZZZ.Data
 
 -- | Performs a β-reduction on a lambda term.
@@ -28,11 +29,9 @@ reduce (Application (Application (Symbol "def" _) (Symbol n _)) v) = do
     return v
 reduce (Application (Application (Symbol "def" _) _) _) = do
     S.lift . Left $ "malformed definition. a def expression should be in the form:\n\t(def name value)\n\twhere name is a symbol"
-reduce (Application (Builtin s b) x) = case s of
-    Lazy -> S.lift $ b x
-    Strict -> do
-        x' <- whnf x
-        S.lift $ b x'
+reduce (Application (Builtin strat f) x) = do
+    x' <- reduceUntil' strat x
+    S.lift $ f x'
 reduce (Application (Application (Symbol "cons" n) a) b)
     | isNormal a = do -- If a is in normal form, then b must not be
         b' <- reduce b
