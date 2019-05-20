@@ -9,7 +9,6 @@ module ZZZZ.Eval
     ) where
 
 import qualified Control.Monad.State as S
-import Debug.Trace
 import ZZZZ.Data
 
 -- | Performs a β-reduction on a lambda term.
