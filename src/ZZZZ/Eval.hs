@@ -54,8 +54,8 @@ reduceWhile fn t | not (fn t) = return t
                  | otherwise = reduce t >>= reduceWhile fn
 
 -- | Reduces a term with respect to an environment while the predicate
--- holds true. However, if a reduction is the same as a previous one
--- (i.e. a loop has occurred)
+-- holds true. However, if two consecutive reductions are identical,
+-- evaluation will halt.
 reduceWhile' :: (Term -> Bool) -> Term -> S.StateT Env Result Term
 reduceWhile' fn t | not (fn t) = return t
                   | otherwise = reduce t >>= rf t fn
@@ -68,8 +68,8 @@ reduceUntil :: (Term -> Bool) -> Term -> S.StateT Env Result Term
 reduceUntil fn = reduceWhile (not . fn)
 
 -- | Reduces a term with respect to an environment until the predicate
--- evaluates to true. However, if a reduction is the same as a previous one
--- (i.e. a loop has occurred)
+-- evaluates to true. However, if two consecutive reductions are identical,
+-- evaluation will halt.
 reduceUntil' :: (Term -> Bool) -> Term -> S.StateT Env Result Term
 reduceUntil' fn = reduceWhile' (not . fn)
 
