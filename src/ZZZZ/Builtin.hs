@@ -19,6 +19,10 @@ builtins =
     , ("head", headB)
     , ("tail", tailB)
     , ("eq", eqB)
+    , ("lt", ltB)
+    , ("gt", gtB)
+    , ("lte", lteB)
+    , ("gte", gteB)
     , ("if", ifB) ]
 
 numOp :: (Double -> Double -> Double) -> Term
@@ -43,9 +47,33 @@ tailB = Builtin strat $ \f -> case f of
           strat _ = False
 
 eqB :: Term
-eqB = [TAny] !=> \a ->
-      [TAny] !=> \b ->
+eqB = [TAny] !=> \(Number a) ->
+      [TAny] !=> \(Number b) ->
       if a == b then Quoted $ Symbol "true" 1
+                else Quoted $ Symbol "false" 1
+
+ltB :: Term
+ltB = [TNumber] !=> \(Number a) ->
+      [TNumber] !=> \(Number b) ->
+      if a < b then Quoted $ Symbol "true" 1
+               else Quoted $ Symbol "false" 1
+
+gtB :: Term
+gtB = [TNumber] !=> \(Number a) ->
+      [TNumber] !=> \(Number b) ->
+        if a > b then Quoted $ Symbol "true" 1
+                else Quoted $ Symbol "false" 1
+
+lteB :: Term
+lteB = [TNumber] !=> \(Number a) ->
+       [TNumber] !=> \(Number b) ->
+        if a <= b then Quoted $ Symbol "true" 1
+                else Quoted $ Symbol "false" 1
+
+gteB :: Term
+gteB = [TNumber] !=> \(Number a) ->
+       [TNumber] !=> \(Number b) ->
+        if a >= b then Quoted $ Symbol "true" 1
                 else Quoted $ Symbol "false" 1
 
 ifB :: Term
