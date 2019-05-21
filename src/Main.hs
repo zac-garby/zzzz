@@ -9,6 +9,7 @@ import ZZZZ.Eval
 import ZZZZ.Data
 import ZZZZ.Builtin
 
+-- | Runs the REPL with the default builtins in the environment.
 main :: IO ()
 main = void $ repl (listEnv builtins)
 

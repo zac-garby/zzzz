@@ -115,7 +115,9 @@ instance Show DataType where
     show TAbstraction = "abstraction"
     show TApplication = "application"
     show TBuiltin = "builtin"
-    
+
+-- | Returns the type of a given term. Not a Haskell type, but a ZZZZ
+-- datatype.
 typeOf :: Term -> DataType
 typeOf (Symbol _ _) = TSymbol
 typeOf (Number _) = TNumber
@@ -126,6 +128,7 @@ typeOf (Abstraction _ _) = TAbstraction
 typeOf (Application _ _) = TApplication
 typeOf (Builtin _ _) = TBuiltin
 
+-- | Checks whether a term is an element of a particular datatype.
 is :: Term -> DataType -> Bool
 is t TAny = True
 is t dt = typeOf t == dt
