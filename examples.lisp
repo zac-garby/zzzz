@@ -8,4 +8,7 @@
 
 # takes n values from the start of xs
 # e.g. (take 2 [1 2 3 4]) -> [1 2]
-(defun take (n xs) (if (eq n 0) [] (cons (head xs) (take (- n 1) (tail xs)))))
+(defun take (n xs)
+    (if (eq n 0) []
+        (cons (head xs)
+        (take (- n 1) (tail xs)))))
