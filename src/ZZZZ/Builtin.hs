@@ -47,8 +47,8 @@ tailB = Builtin strat $ \f -> case f of
           strat _ = False
 
 eqB :: Term
-eqB = [TAny] !=> \(Number a) ->
-      [TAny] !=> \(Number b) ->
+eqB = [TAny] !=> \a ->
+      [TAny] !=> \b ->
       if a == b then Quoted $ Symbol "true" 1
                 else Quoted $ Symbol "false" 1
 
