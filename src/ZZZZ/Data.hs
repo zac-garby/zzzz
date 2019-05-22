@@ -160,8 +160,12 @@ instance Show Term where
     show Empty = "[]"
     show (Abstraction p b) = "λ" ++ show p ++ "." ++ show b
     show a@(Application f x) = case unlist a of
-        Just xs -> "[" ++ unwords (map show xs) ++ "]"
+        Just xs -> case traverse fromChar xs of
+            Just str -> "\"" ++ str ++ "\""
+            Nothing -> "[" ++ unwords (map show xs) ++ "]"
         Nothing -> "(" ++ show f ++ " " ++ show x ++ ")"
+        where fromChar (Character c) = Just c
+              fromChar _ = Nothing
     show (Builtin _ _) = "<builtin>"
 
 -- | The Eq instance for terms assumes that they are in weak-head-normal-form.
