@@ -12,3 +12,11 @@
     (if (eq n 0) []
                  (cons (head xs)
                        (take (- n 1) (tail xs)))))
+
+# applies f to every value in xs
+# e.g. (map (+ 1) [1 2 3]) -> [2 3 4]
+(defun map (f xs)
+  (if (eq xs [])
+    []
+    (cons (f (head xs))
+          (map f (tail xs)))))
