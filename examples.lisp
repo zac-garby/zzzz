@@ -20,3 +20,11 @@
     []
     (cons (f (head xs))
           (map f (tail xs)))))
+
+# folds xs from the right, starting with the initial value i,
+# using the function f.
+# e.g. (foldr + 0 [1 2 3]) -> (+ 1 (+ 2 (+ 3 0))) -> 6
+(defun foldr (f i xs)
+  (if (eq xs [])
+    i
+    (f (head xs) (foldr f i (tail xs)))))
