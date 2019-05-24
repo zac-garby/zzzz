@@ -18,6 +18,7 @@ builtins =
     , ("/", numOp (/))
     , ("head", headB)
     , ("tail", tailB)
+    , ("null", nullB)
     , ("eq", eqB)
     , ("lt", ltB)
     , ("gt", gtB)
@@ -45,6 +46,13 @@ tailB = Builtin strat $ \f -> case f of
     _ -> Left "tail only works on cons-lists"
     where strat (Application (Application (Symbol "cons" _) _) _) = True
           strat _ = False
+
+nullB :: Term
+nullB = (strat, [TAny]) ==> null'
+    where strat (Application (Application (Symbol "cons" _) _) _) = True
+          strat _ = False
+          null' Empty = Quoted $ Symbol "true" 1
+          null' _ = Quoted $ Symbol "false" 1
 
 eqB :: Term
 eqB = [TAny] !=> \a ->

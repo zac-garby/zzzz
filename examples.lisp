@@ -16,7 +16,7 @@
 # applies f to every value in xs
 # e.g. (map (+ 1) [1 2 3]) -> [2 3 4]
 (defun map (f xs)
-  (if (eq xs [])
+  (if (null xs)
     []
     (cons (f (head xs))
           (map f (tail xs)))))
@@ -25,14 +25,14 @@
 # using the function f.
 # e.g. (foldr + 0 [1 2 3]) -> (+ 1 (+ 2 (+ 3 0))) -> 6
 (defun foldr (f i xs)
-  (if (eq xs [])
+  (if (null xs)
     i
     (f (head xs) (foldr f i (tail xs)))))
 
 # filters xs with the predicate f
 # e.g. (filter (eq 2) [1 2 3 4 5 4 3 2 1]) -> [2 2]
 (defun filter (f xs)
-  (if (eq xs [])
+  (if (null xs)
     []
     (let (hd (head xs))
       (if (f hd)
