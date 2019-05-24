@@ -11,10 +11,10 @@ import Data.Maybe
 import Control.Monad
 
 space :: ReadP ()
-space = void $ many (satisfy isSpace)
+space = skipSpaces
 
 space1 :: ReadP ()
-space1 = void $ many1 (satisfy isSpace)
+space1 = satisfy isSpace >> space
 
 letter :: ReadP Char
 letter = satisfy (\x -> not $ isSpace x || x `elem` "'\"()[]0123456789")
