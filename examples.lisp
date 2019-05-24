@@ -41,6 +41,6 @@
 
 # computes the length of a list.
 (defun len (xs)
-  (if (eq xs [])
+  (if (null xs)
     0
     (+ 1 (len (tail xs)))))
