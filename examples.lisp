@@ -28,3 +28,19 @@
   (if (eq xs [])
     i
     (f (head xs) (foldr f i (tail xs)))))
+
+# filters xs with the predicate f
+# e.g. (filter (eq 2) [1 2 3 4 5 4 3 2 1]) -> [2 2]
+(defun filter (f xs)
+  (if (eq xs [])
+    []
+    (let (hd (head xs))
+      (if (f hd)
+        (cons hd (filter f (tail xs)))
+        (filter f (tail xs))))))
+
+# computes the length of a list.
+(defun len (xs)
+  (if (eq xs [])
+    0
+    (+ 1 (len (tail xs)))))
