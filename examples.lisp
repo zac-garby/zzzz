@@ -53,9 +53,9 @@
   (f (g x)))
  
 # applies a value to the second parameter of a function instead
-# of the first. 'rhs' stands for right-hand-side, reflecting the
-# fact that it will often be used for partially applying non-
-# commutative binary operators.
-# e.g. ((rhs / 2) 5) -> 2.5
-(defun rhs (f y)
+# of the first. 'lhs' stands for left-hand-side, leading to code
+# like (map (lhs - 2) [1 2 3]), which gives the impression of 'lhs'
+# being a placeholder value.
+# e.g. ((lhs / 2) 5) -> 2.5
+(defun lhs (f y)
   (lambda (x) (f x y)))
