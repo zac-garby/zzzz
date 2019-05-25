@@ -3,8 +3,8 @@
 (defun repeat (x) (cons x (repeat x)))
 
 # replicates some value x, n times
-# e.g. (repl 2 5) -> [2 2 2 2 2]
-(defun repl (x n) (if (eq n 0) [] (cons x (repl x (- n 1)))))
+# e.g. (repl 5 'e') -> "eeeee"
+(defun repl (n) (. (take n) repeat))
 
 # range generates a range of values, starting from an initial
 # value until the final value is reached or exceeded.
