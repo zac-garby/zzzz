@@ -48,5 +48,14 @@
 
 # composes two unary functions together, such that the output
 # from the second one is fed into the first one.
+# e.g. ((. (+ 2) (* 2)) 5) -> 12
 (defun . (f g x)
   (f (g x)))
+ 
+# applies a value to the second parameter of a function instead
+# of the first. 'rhs' stands for right-hand-side, reflecting the
+# fact that it will often be used for partially applying non-
+# commutative binary operators.
+# e.g. ((rhs / 2) 5) -> 2.5
+(defun rhs (f y)
+  (lambda (x) (f x y)))
