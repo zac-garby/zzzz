@@ -9,9 +9,10 @@
 # takes n values from the start of xs
 # e.g. (take 2 [1 2 3 4]) -> [1 2]
 (defun take (n xs)
-    (if (eq n 0) []
-                 (cons (head xs)
-                       (take (- n 1) (tail xs)))))
+  (if (eq n 0)
+    []
+    (cons (head xs)
+          (take (- n 1) (tail xs)))))
 
 # applies f to every value in xs
 # e.g. (map (+ 1) [1 2 3]) -> [2 3 4]
@@ -44,3 +45,8 @@
   (if (null xs)
     0
     (+ 1 (len (tail xs)))))
+
+# composes two unary functions together, such that the output
+# from the second one is fed into the first one.
+(defun . (f g x)
+  (f (g x)))
