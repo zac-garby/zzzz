@@ -17,6 +17,7 @@ builtins =
     , ("*", numOp (*))
     , ("/", numOp (/))
     , ("^", numOp (**))
+    , ("mod", numOp modB)
     , ("head", headB)
     , ("tail", tailB)
     , ("null", nullB)
@@ -32,6 +33,9 @@ numOp :: (Double -> Double -> Double) -> Term
 numOp f = [TNumber] !=> \(Number a) ->
           [TNumber] !=> \(Number b) ->
           Number (f a b)
+
+modB :: Double -> Double -> Double
+modB x y = fromIntegral $ (round x) `mod` (round y)
 
 headB :: Term
 headB = Builtin strat $ \f -> case f of
