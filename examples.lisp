@@ -6,6 +6,21 @@
 # e.g. (repl 2 5) -> [2 2 2 2 2]
 (defun repl (x n) (if (eq n 0) [] (cons x (repl x (- n 1)))))
 
+# range generates a range of values, starting from an initial
+# value until the final value is reached or exceeded.
+# e.g. (range 1 0.5 2) -> [1, 1.5, 2]
+(defun range (s d f)
+  (if (eq s f) [s]
+    (let (cmp (if (lt s f) gt lt))
+      (if (cmp (+ s d) f) []
+        (cons s (range (+ s d) d f))))))
+
+# range. is the same as range, but automatically infers a
+# step to use. if the start value is smaller than the final
+# value, a step of 1 is used. otherwise, -1.
+(defun range. (s f)
+  (range s (if (lt s f) 1 (- 0 1)) f))
+
 # takes n values from the start of xs
 # e.g. (take 2 [1 2 3 4]) -> [1 2]
 (defun take (n xs)
