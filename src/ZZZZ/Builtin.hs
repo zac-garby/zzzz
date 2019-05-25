@@ -25,7 +25,8 @@ builtins =
     , ("gt", gtB)
     , ("lte", lteB)
     , ("gte", gteB)
-    , ("if", ifB) ]
+    , ("if", ifB)
+    , ("inf", Number (read "Infinity")) ]
 
 numOp :: (Double -> Double -> Double) -> Term
 numOp f = [TNumber] !=> \(Number a) ->
