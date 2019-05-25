@@ -5,8 +5,42 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>ZZZZ Language</title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,900&display=swap" rel="stylesheet">  
+        <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-  
+        <div id="wrapper">
+            <header>
+                <img src="logo-350x350@2x.png" width=250>
+                <h1>zzzz</h1>
+                <h2>A Dynamically Typed, Lazily Evaluated Lisp, Based on Lambda Calculus.</h2>
+            </header>
+            
+            <div id="examples">
+                <div class="example">
+                    <pre><code>(<span class="fn">defun</span> foldr (f i xs)
+  (<span class="fn">if</span> (<span class="fn">null</span> xs)
+    i
+    (<span class="fn">f</span> (<span class="fn">head</span> xs)
+       (<span class="fn">foldr</span> f i (<span class="fn">tail</span> xs)))))
+
+(<span class="fn">foldr</span> + 0 [1 2 3]) <span class="result">6</span></code></pre>
+                    <p><strong>A Functional Language.</strong> An implementation of a right-fold function in ZZZZ, using a recursive definition.</p>
+                    
+                    <p>Also shows how the <code>+</code> operator can be passed directly into a call to <code>foldr</code> as a higher-order function.</p>
+                </div>
+              
+                <div class="example">
+                    <pre><code>(<span class="fn">take</span> 5
+  (<span class="fn">map</span> (<span class="fn">lhs</span> ^ 2)
+    (<span class="fn">range.</span> 1 inf)))
+  <span class="result">[1 4 9 16 25]</span></code></pre>
+                    
+                    <p><strong>Infinite Data.</strong> In this example, an infinite list is created with a call to <code>range.</code>, generating the list <code>[1 2 3 4 ...]</code>. Each element of the infinite list is squared, and the first five are extracted and returned.</p>
+                    
+                    <p>The <code>lhs</code> function is used to apply the second argument to a function instead of the first.</p>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
