@@ -16,6 +16,7 @@ builtins =
     , ("-", numOp (-))
     , ("*", numOp (*))
     , ("/", numOp (/))
+    , ("^", numOp (**))
     , ("head", headB)
     , ("tail", tailB)
     , ("null", nullB)
