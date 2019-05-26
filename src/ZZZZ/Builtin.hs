@@ -58,14 +58,14 @@ nullB :: Term
 nullB = (strat, [TAny]) ==> null'
     where strat (Application (Application (Symbol "cons" _) _) _) = True
           strat _ = False
-          null' Empty = Quoted $ Symbol "true" 1
-          null' _ = Quoted $ Symbol "false" 1
+          null' Empty = true
+          null' _ = false
 
 eqB :: Term
 eqB = [TAny] !=> \a ->
       [TAny] !=> \b ->
-      if a == b then Quoted $ Symbol "true" 1
-                else Quoted $ Symbol "false" 1
+      if a == b then true
+                else false
 
 typeB :: Term
 typeB = [TAny] !=> mkString . show . typeOf
@@ -73,26 +73,26 @@ typeB = [TAny] !=> mkString . show . typeOf
 ltB :: Term
 ltB = [TNumber] !=> \(Number a) ->
       [TNumber] !=> \(Number b) ->
-      if a < b then Quoted $ Symbol "true" 1
-               else Quoted $ Symbol "false" 1
+      if a < b then true
+               else false
 
 gtB :: Term
 gtB = [TNumber] !=> \(Number a) ->
       [TNumber] !=> \(Number b) ->
-        if a > b then Quoted $ Symbol "true" 1
-                else Quoted $ Symbol "false" 1
+        if a > b then true
+                else false
 
 lteB :: Term
 lteB = [TNumber] !=> \(Number a) ->
        [TNumber] !=> \(Number b) ->
-        if a <= b then Quoted $ Symbol "true" 1
-                else Quoted $ Symbol "false" 1
+        if a <= b then true
+                else false
 
 gteB :: Term
 gteB = [TNumber] !=> \(Number a) ->
        [TNumber] !=> \(Number b) ->
-        if a >= b then Quoted $ Symbol "true" 1
-                else Quoted $ Symbol "false" 1
+        if a >= b then true
+                else false
 
 ifB :: Term
 ifB = [TAny] !=> \cond ->

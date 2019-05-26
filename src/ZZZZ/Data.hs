@@ -254,3 +254,11 @@ renumber t = evalState (renumber' t) 1
               n <- S.get
               put (n + 1)
               return n
+
+-- | The boolean value True.
+true :: Term
+true = Quoted (Symbol "true" 1)
+
+-- | The boolean value False.
+false :: Term
+false = Quoted (Symbol "false" 1)
