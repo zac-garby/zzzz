@@ -29,7 +29,7 @@ reduce (Application (Application (Symbol "def" _) (Symbol n _)) v) = do
 reduce (Application (Application (Symbol "def" _) _) _) = do
     S.lift . Left $ "malformed definition. a def expression should be in the form:\n\t(def name value)\n\twhere name is a symbol"
 reduce (Application (Builtin strat f) x) = do
-    x' <- reduceUntil' strat x
+    x' <- reduceUntil' ((||) <$> strat <*> isNormal) x
     S.lift $ f x'
 reduce (Application (Application (Symbol "cons" n) a) b)
     | isNormal a = do -- If a is in normal form, then b must not be
