@@ -21,6 +21,7 @@ builtins =
     , ("head", headB)
     , ("tail", tailB)
     , ("null", nullB)
+    , ("type", typeB)
     , ("eq", eqB)
     , ("lt", ltB)
     , ("gt", gtB)
@@ -65,6 +66,9 @@ eqB = [TAny] !=> \a ->
       [TAny] !=> \b ->
       if a == b then Quoted $ Symbol "true" 1
                 else Quoted $ Symbol "false" 1
+
+typeB :: Term
+typeB = [TAny] !=> mkString . show . typeOf
 
 ltB :: Term
 ltB = [TNumber] !=> \(Number a) ->
