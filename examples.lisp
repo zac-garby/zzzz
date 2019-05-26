@@ -74,3 +74,15 @@
 ; e.g. ((lhs / 2) 5) -> 2.5
 (defun lhs (f y)
   (lambda (x) (f x y)))
+
+; returns 'true if and only if either of the arguments is 'true
+(defun or (a b)
+  (if a a b))
+
+; returns 'true if and only if both arguments are 'true
+(defun and (a b)
+  (if a b 'false))
+
+; returns the logical inverse of the argument
+(defun not (x)
+  (if x 'false 'true))
