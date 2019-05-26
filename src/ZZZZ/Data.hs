@@ -95,8 +95,7 @@ instance Eq Expr where
 
 -- | Represents a type of a @Term@.
 data DataType
-    = TAny
-    | TSymbol
+    = TSymbol
     | TNumber
     | TCharacter
     | TQuoted
@@ -104,26 +103,39 @@ data DataType
     | TAbstraction
     | TApplication
     | TBuiltin
+    -- Imaginary types
+    | TAny
+    | TBool
+    | TList
     deriving Eq
 
 instance Show DataType where
+    show TAny = "any"
     show TSymbol = "symbol"
     show TNumber = "number"
     show TCharacter = "character"
     show TQuoted = "quoted"
-    show TEmpty = "empty"
     show TAbstraction = "abstraction"
     show TApplication = "application"
     show TBuiltin = "builtin"
+    show TBool = "bool"
+    show TList = "list"
 
 -- | Returns the type of a given term. Not a Haskell type, but a ZZZZ
 -- datatype.
 typeOf :: Term -> DataType
+
+-- Imaginary types
+typeOf (Quoted (Symbol "true" _)) = TBool
+typeOf (Quoted (Symbol "false" _)) = TBool
+typeOf (Application (Application (Symbol "cons" _) _) _) = TList
+
+-- Real types
 typeOf (Symbol _ _) = TSymbol
 typeOf (Number _) = TNumber
 typeOf (Character _) = TCharacter
 typeOf (Quoted _) = TQuoted
-typeOf Empty = TEmpty
+typeOf Empty = TList
 typeOf (Abstraction _ _) = TAbstraction
 typeOf (Application _ _) = TApplication
 typeOf (Builtin _ _) = TBuiltin
@@ -190,6 +202,10 @@ apply = foldl' Application
 mkList :: [Term] -> Term
 mkList [] = Empty
 mkList (x:xs) = apply (Symbol "cons" 1) [x, mkList xs]
+
+-- | Transforms a Haskell string into a ZZZZ string.
+mkString :: String -> Term
+mkString = mkList . map Character
 
 -- | Converts a cons-list into a list of terms. Will return Nothing if the
 -- input isn't a cons-list.
